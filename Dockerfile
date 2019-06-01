@@ -9,7 +9,9 @@ RUN apt-get -y install git
 # Download stuff from repo
 RUN mkdir /extra && \
     cd /extra && \
-    git clone https://github.com/justinblaber/T1_normalization_app.git
+    git clone https://github.com/justinblaber/T1_normalization_app.git && \
+    mv T1_normalization_app/extra/* . && \
+    rm -rf T1_normalization_app
 
 # Install stuff
 RUN mkdir /INPUTS && \
