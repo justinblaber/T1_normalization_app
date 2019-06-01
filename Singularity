@@ -1,2 +1,2 @@
 Bootstrap: docker
-From: justinblaber/T1_normalization
+From: justinblaber/t1_normalization
