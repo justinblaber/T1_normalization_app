@@ -220,62 +220,62 @@ if [[ $output == 1 && ! -z $TUTORIAL_DATA ]]; then
 fi
 
 ######## --------- Functional Analysis Stuff ----------- #######
-if [[ -z "$NO_FSFAST" ]]; then
-    export FMRI_ANALYSIS_DIR=$FSFAST_HOME # backwards compatibility
-    SUF=~/matlab/startup.m
-    if [ ! -e $SUF ]; then
-        echo "INFO: $SUF does not exist ... creating"
-        mkdir -p ~/matlab
-        touch $SUF
-
-        echo "%------------ FreeSurfer -----------------------------%" >> $SUF
-        echo "fshome = getenv('FREESURFER_HOME');"                     >> $SUF
-        echo "fsmatlab = sprintf('%s/matlab',fshome);"                 >> $SUF
-        echo "if (exist(fsmatlab) == 7)"                               >> $SUF
-        echo "    addpath(genpath(fsmatlab));"                         >> $SUF
-        echo "end"                                                     >> $SUF
-        echo "clear fshome fsmatlab;"                                  >> $SUF
-        echo "%-----------------------------------------------------%" >> $SUF
-        echo "" >> $SUF
-        echo "%------------ FreeSurfer FAST ------------------------%" >> $SUF
-        echo "fsfasthome = getenv('FSFAST_HOME');"                     >> $SUF
-        echo "fsfasttoolbox = sprintf('%s/toolbox',fsfasthome);"       >> $SUF
-        echo "if (exist(fsfasttoolbox) == 7)"                          >> $SUF
-        echo "    path(path,fsfasttoolbox);"                           >> $SUF
-        echo "end"                                                     >> $SUF
-        echo "clear fsfasthome fsfasttoolbox;"                         >> $SUF
-        echo "%-----------------------------------------------------%" >> $SUF
-    fi
-
-    tmp1=`grep FSFAST_HOME $SUF       | wc -l`;
-    tmp2=`grep FMRI_ANALYSIS_DIR $SUF | wc -l`;
-    tmp3=`grep FREESURFER_HOME $SUF   | wc -l`;
-
-    if [[ $tmp1 == 0 && $tmp2 == 0 && $tmp3 == 0 ]]; then
-        if [[ $output == 1 ]]; then
-            echo ""
-            echo "WARNING: The $SUF file does not appear to be";
-            echo "         configured correctly. You may not be able"
-            echo "         to run the FS-FAST programs";
-            echo "Try adding the following lines to $SUF"
-            echo "-----------------cut---------------------"
-            echo "fshome = getenv('FREESURFER_HOME');"
-            echo "fsmatlab = sprintf('%s/matlab',fshome);"
-            echo "if (exist(fsmatlab) == 7)"
-            echo "    addpath(genpath(fsmatlab));"
-            echo "end"
-            echo "clear fshome fsmatlab;"
-            echo "fsfasthome = getenv('FSFAST_HOME');"
-            echo "fsfasttoolbox = sprintf('%s/toolbox',fsfasthome);"
-            echo "if (exist(fsfasttoolbox) == 7)"
-            echo "    path(path,fsfasttoolbox);"
-            echo "end"
-            echo "clear fsfasthome fsfasttoolbox;"
-            echo "-----------------cut---------------------"
-            echo ""
-        fi
-    fi
-fi
+#if [[ -z "$NO_FSFAST" ]]; then
+#    export FMRI_ANALYSIS_DIR=$FSFAST_HOME # backwards compatibility
+#    SUF=~/matlab/startup.m
+#    if [ ! -e $SUF ]; then
+#        echo "INFO: $SUF does not exist ... creating"
+#        mkdir -p ~/matlab
+#        touch $SUF
+#
+#        echo "%------------ FreeSurfer -----------------------------%" >> $SUF
+#        echo "fshome = getenv('FREESURFER_HOME');"                     >> $SUF
+#        echo "fsmatlab = sprintf('%s/matlab',fshome);"                 >> $SUF
+#        echo "if (exist(fsmatlab) == 7)"                               >> $SUF
+#        echo "    addpath(genpath(fsmatlab));"                         >> $SUF
+#        echo "end"                                                     >> $SUF
+#        echo "clear fshome fsmatlab;"                                  >> $SUF
+#        echo "%-----------------------------------------------------%" >> $SUF
+#        echo "" >> $SUF
+#        echo "%------------ FreeSurfer FAST ------------------------%" >> $SUF
+#        echo "fsfasthome = getenv('FSFAST_HOME');"                     >> $SUF
+#        echo "fsfasttoolbox = sprintf('%s/toolbox',fsfasthome);"       >> $SUF
+#        echo "if (exist(fsfasttoolbox) == 7)"                          >> $SUF
+#        echo "    path(path,fsfasttoolbox);"                           >> $SUF
+#        echo "end"                                                     >> $SUF
+#        echo "clear fsfasthome fsfasttoolbox;"                         >> $SUF
+#        echo "%-----------------------------------------------------%" >> $SUF
+#    fi
+#
+#    tmp1=`grep FSFAST_HOME $SUF       | wc -l`;
+#    tmp2=`grep FMRI_ANALYSIS_DIR $SUF | wc -l`;
+#    tmp3=`grep FREESURFER_HOME $SUF   | wc -l`;
+#
+#    if [[ $tmp1 == 0 && $tmp2 == 0 && $tmp3 == 0 ]]; then
+#        if [[ $output == 1 ]]; then
+#            echo ""
+#            echo "WARNING: The $SUF file does not appear to be";
+#            echo "         configured correctly. You may not be able"
+#            echo "         to run the FS-FAST programs";
+#            echo "Try adding the following lines to $SUF"
+#            echo "-----------------cut---------------------"
+#            echo "fshome = getenv('FREESURFER_HOME');"
+#            echo "fsmatlab = sprintf('%s/matlab',fshome);"
+#            echo "if (exist(fsmatlab) == 7)"
+#            echo "    addpath(genpath(fsmatlab));"
+#            echo "end"
+#            echo "clear fshome fsmatlab;"
+#            echo "fsfasthome = getenv('FSFAST_HOME');"
+#            echo "fsfasttoolbox = sprintf('%s/toolbox',fsfasthome);"
+#            echo "if (exist(fsfasttoolbox) == 7)"
+#            echo "    path(path,fsfasttoolbox);"
+#            echo "end"
+#            echo "clear fsfasthome fsfasttoolbox;"
+#            echo "-----------------cut---------------------"
+#            echo ""
+#        fi
+#    fi
+#fi
 
 ### ----------- MINC Stuff -------------- ####
 if [[ $output == 1 && -n "$MNI_DIR" ]]; then
