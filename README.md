@@ -1,4 +1,4 @@
-# T1_normalization_app
+# t1_normalization_app
 
 This includes everything required to build a docker and corresponding singularity container to perform a minimal FreeSurfer T1 intensity normalization. 
 
