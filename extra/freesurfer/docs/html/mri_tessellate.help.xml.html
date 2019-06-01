@@ -1,0 +1,65 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_tessellate</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_tessellate [options] &lt;invol&gt; &lt;labelvalue&gt; &lt;outsurf&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program creates surface by tessellating given input volumeNote: the meaning of the labels can be found in $FREESURFER_HOME/FreeSurferColorLUT.txt</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;invol&gt;</td><td>input volume</td></tr>
+<tr>
+<td>&lt;labelvalue&gt;</td><td>integer, if input is filled volume, 127 is rh, 255 is lh</td></tr>
+<tr>
+<td>&lt;outsurf&gt;</td><td>binary surface of the tessellation </td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-a</td><td>tessellate the surface of all voxels with different labels</td></tr>
+<tr>
+<td>-maxv nvertices</td><td>set the max # of vertices to nverttices, and the max # of faces to (2*nvertices)</td></tr>
+<tr>
+<td>-n</td><td>save surface with real RAS coordinates where c_(r,a,s) != 0</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>outsurf</td><td>surface file, typically ?h.orig</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_tessellate $SUBJECTS_DIR/subjid/mri/filled 127 rh.orig</p>
+
+<h1>EXAMPLE 2</h1>
+<p>mri_tessellate $SUBJECTS_DIR/subjid/mri/aseg 17 lh.hippocampus</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mri_pretess</p></html>
+</body>

@@ -1,0 +1,106 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_normalize</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_normalize &lt;input vol&gt; &lt;output vol&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>Normalize the white-matter, optionally based on control points. The input volume is converted into a new volume where white matter image values all range around 110.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;input vol&gt;</td><td>input mri volume file</td></tr>
+<tr>
+<td>&lt;output vol&gt;</td><td>output mri volume file</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-n &lt;int n&gt;</td><td>use n 3d normalization iterations (default=2)</td></tr>
+<tr>
+<td>-no1d</td><td>disable 1d normalization</td></tr>
+<tr>
+<td>-nonmax_suppress (1/0)</td><td>turn non-maximum suppression on (1) or off (0) when using interior of surfaces</td></tr>
+<tr>
+<td>-conform</td><td>interpolate and embed volume to be 256^3</td></tr>
+<tr>
+<td>-noconform</td><td>do not conform the volume</td></tr>
+<tr>
+<td>-gentle</td><td>perform kinder gentler normalization</td></tr>
+<tr>
+<td>-f &lt;path to file&gt;</td><td>use control points file (usually control.dat)</td></tr>
+<tr>
+<td>-fonly &lt;fname&gt;</td><td>use only control points file</td></tr>
+<tr>
+<td>-lonly &lt;fname&gt;</td><td>use only control points in label file</td></tr>
+<tr>
+<td>-label &lt;fname&gt;</td><td>use control points in label file</td></tr>
+<tr>
+<td>-w &lt;mri_vol c&gt; &lt;mri_vol b&gt;</td><td> write ctrl point(c) and bias field(b) volumes</td></tr>
+<tr>
+<td>-a &lt;float a&gt;</td><td>use control point with intensity a above target (default=25.0)</td></tr>
+<tr>
+<td>-b &lt;float b&gt;</td><td>use control point with intensity b below target (default=10.0)</td></tr>
+<tr>
+<td>-g &lt;float g&gt;</td><td>use max intensity/mm gradient g (default=1.000)</td></tr>
+<tr>
+<td>-prune &lt;boolean&gt;</td><td>turn pruning of control points on/off (default=off). pruning useful if white is expanding into gm</td></tr>
+<tr>
+<td>-MASK maskfile</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-atlas &lt;path to gca&gt;&lt;path to gca transform&gt; &lt;min distance of control points from non-brain&gt;</td><td>use atlas to exlude control-points from being in non-brain regions</td></tr>
+<tr>
+<td>-noskull</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-monkey</td><td>turns off 1d, sets num_3d_iter=1</td></tr>
+<tr>
+<td>-nosnr</td><td>disable snr normalization</td></tr>
+<tr>
+<td>-sigma sigma</td><td>smooth bias field</td></tr>
+<tr>
+<td>-aseg aseg</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-v Gvx Gvy Gvz</td><td>for debugging</td></tr>
+<tr>
+<td>-d Gx Gy Gz</td><td>for debugging</td></tr>
+<tr>
+<td>-r controlpoints biasfield</td><td>for reading</td></tr>
+<tr>
+<td>-surface &lt;surface&gt; &lt;xform&gt;</td><td>normalize based on the skelton of the interior of the transformed surface</td></tr>
+<tr>
+<td>-u or -h</td><td>print usage</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_normalize SUBJECT/mri/nu.mgz SUBJECT/mri/T1.mgz<br /><br />Uses the nu volume (nonuniformity corrected volume), and creates the T1 volume, with white matter voxels around 110 image value</p>
+
+<h1>EXAMPLE 2</h1>
+<p>mri_normalize -noskull -aseg aseg.mgz -mask brainmask.mgz norm.mgz brain.mgz<br /><br />Uses the norm volume, and creates the brain volume, making use of the aseg and masking with brainmask</p>
+
+<h1>REFERENCES</h1>
+<p>\"Cortical Surface-Based Analysis I: Segmentation and Surface Reconstruction\", Dale, A.M., Fischl, B., Sereno, M.I. (1999) NeuroImage 9(2):179-194<br /></p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>nu_correct, mri_fill</p></html>
+</body>

@@ -1,0 +1,159 @@
+#! /bin/csh -f
+#
+# Script to allow editing of minc files
+#
+# Usage: mincedit <minc file> [<editor>]
+#
+# Modifications: 
+#   $Log: mincedit,v $
+#   Revision 6.2  2000/09/12 15:43:37  neelin
+#   Changed default TMPDIR to look for /var/tmp, /usr/tmp, /tmp.
+#
+#   Revision 6.1  1999/10/19 14:45:21  neelin
+#   Fixed Log subsitutions for CVS
+#
+#   Revision 6.0  1997/09/12 13:23:34  neelin
+#   Release of minc version 0.6
+#    
+#   Revision 5.0  1997/08/21  13:24:35  neelin
+#   Release of minc version 0.5
+#  
+#   Revision 4.0  1997/05/07  20:00:36  neelin
+#   Release of minc version 0.4
+#  
+#   Revision 3.0  1995/05/15  19:31:09  neelin
+#   Release of minc version 0.3
+#  
+#   Revision 2.0  1994/09/28  10:33:58  neelin
+#   Release of minc version 0.2
+#  
+#   Revision 1.6  94/09/28  10:33:55  neelin
+#   Pre-release
+#   
+#   Revision 1.5  93/08/25  11:24:48  neelin
+#   Added checking for -h or -help options.
+#   
+#   Revision 1.4  93/08/11  15:19:09  neelin
+#   Added RCS logging in source.
+# 
+#
+#
+# Copyright 1993 Peter Neelin, McConnell Brain Imaging Centre, 
+# Montreal Neurological Institute, McGill University.
+# Permission to use, copy, modify, and distribute this
+# software and its documentation for any purpose and without
+# fee is hereby granted, provided that the above copyright
+# notice appear in all copies.  The author and McGill University
+# make no representations about the suitability of this
+# software for any purpose.  It is provided "as is" without
+# express or implied warranty.
+
+# Create temporary directory
+if (! $?TMPDIR) then
+    if (-d /var/tmp) then
+	set TMPDIR = /var/tmp
+    else if (-d /usr/tmp) then
+	set TMPDIR = /usr/tmp
+    else
+	set TMPDIR = /tmp
+    endif
+endif
+if (! -d $TMPDIR) then
+    echo "Working directory $TMPDIR does not exist."
+    exit 1
+endif
+set working_dir = $TMPDIR
+
+# Set default editor
+set editor = emacs
+
+# Check arguments
+switch ("$#argv")
+case 1:
+   if (("$1" == "-help") || ("$1" == "-h") || ("$1" == "")) then
+      echo "Usage: $0 <minc file> [<editor>]"
+      exit
+   endif
+   if ($?EDITOR) then
+      set editor = $EDITOR
+   endif
+   breaksw
+case 2:
+   set editor = "$2"
+   breaksw
+default:
+   echo "Usage: $0 <minc file> [<editor>]"
+   exit
+endsw
+
+# Set up the file names
+set filename = $1
+set backup_filename = ${filename}~
+set cdl_prefix = mincedit-$$
+set cdl_orig = $working_dir/${cdl_prefix}-orig.cdl
+set cdl_edit = $working_dir/${cdl_prefix}-edit.cdl
+
+# Set interrupt handling
+onintr cleanup
+
+# Dump the file
+mincheader $filename > $cdl_orig
+if ($status) then
+   echo "${0}: Error reading file '$filename'"
+   goto cleanup
+endif
+cp $cdl_orig $cdl_edit
+
+# Loop until successful file generation
+set do_edit = 1
+while ($do_edit)
+
+#  Edit the cdl file
+   $editor $cdl_edit
+   if ($status) then
+      echo "${0}: Error editing with editor '$editor'"
+      goto cleanup
+   endif
+   set do_edit = 0
+
+#  Compare the files for difference
+   diff $cdl_orig $cdl_edit >& /dev/null
+   if ($status == 0) then
+      echo "File $filename not modified"
+      goto cleanup
+   endif
+
+#  Rename the original file and generate a new one
+   mv $filename $backup_filename
+   ncgen -o $filename $cdl_edit
+   if ($status) then
+      mv $backup_filename $filename
+      echo -n "Error generating new file. Redit the file (y/n)? (def=n):"
+      set answer = $<
+      if ("$answer" =~ y*) then
+         set do_edit = 1
+         continue
+      endif
+      goto cleanup
+   endif
+
+#  Copy the data
+   minccopy $backup_filename $filename
+   if ($status) then
+      mv $backup_filename $filename
+      echo -n "Error copying image data. Redit the file (y/n)? (def=n):"
+      set answer = $<
+      if ("$answer" =~ y*) then
+         set do_edit = 1
+         continue
+      endif
+      goto cleanup
+   endif
+
+# End while loop
+end
+
+cleanup:
+   rm -f $working_dir/*${cdl_prefix}*
+   exit
+

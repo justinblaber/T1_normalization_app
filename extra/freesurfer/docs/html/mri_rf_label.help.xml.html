@@ -1,0 +1,129 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_ca_label</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_ca_label [&lt;options&gt;] invol1 [invol2 ...] xform gcafile outvol</p>
+
+<h1>DESCRIPTION</h1>
+<p>**********************************************************</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>invol1 [invol2 ...]</td><td>input volume(s)</td></tr>
+<tr>
+<td>xform</td><td>transform file</td></tr>
+<tr>
+<td>gcafile</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>outvol</td><td>output volume</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-cross-sequence</td><td>label a volume acquired with sequence different than atlas</td></tr>
+<tr>
+<td>-nogibbs</td><td>disable gibbs priors</td></tr>
+<tr>
+<td>-wm &lt;path&gt;</td><td>use wm segmentation</td></tr>
+<tr>
+<td>-conform</td><td>interpolate volume to be isotropic 1mm^3</td></tr>
+<tr>
+<td>-normpd</td><td>normalize PD image to GCA means</td></tr>
+<tr>
+<td>-tl &lt;gca_tl&gt;</td><td>use file to label thin temporal lobe</td></tr>
+<tr>
+<td>-debug_voxel &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>debug voxel</td></tr>
+<tr>
+<td>-debug_node &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>debug node</td></tr>
+<tr>
+<td>-debug_label &lt;int n&gt;</td><td>debug label</td></tr>
+<tr>
+<td>-tr &lt;float n&gt;</td><td>set TR in msec</td></tr>
+<tr>
+<td>-te &lt;float n&gt;</td><td>set TE in msec</td></tr>
+<tr>
+<td>-alpha &lt;float n&gt;</td><td>set alpha in radians</td></tr>
+<tr>
+<td>-example &lt;mri_vol&gt; &lt;segmentation&gt;</td><td>use T1 (mri_vol) and segmentation as example</td></tr>
+<tr>
+<td>-pthresh &lt;float n&gt;</td><td>use p threshold n for adaptive renormalization (default=.7)</td></tr>
+<tr>
+<td>-niter &lt;int n&gt;</td><td>apply max likelihood for n iterations (default=2)</td></tr>
+<tr>
+<td>-novar</td><td>do not use variance in classification</td></tr>
+<tr>
+<td>-regularize &lt;float n&gt;</td><td>regularize variance to be sigma+nC(noise)</td></tr>
+<tr>
+<td>-nohippo</td><td>do not auto-edit hippocampus</td></tr>
+<tr>
+<td>-fwm &lt;mri_vol&gt;</td><td>use fixed white matter segmentation from wm</td></tr>
+<tr>
+<td>-mri &lt;mri_vol&gt;</td><td>write most likely MR volume to mri_vol</td></tr>
+<tr>
+<td>-heq &lt;mri_vol&gt;</td><td>use histogram equalization from mri_vol</td></tr>
+<tr>
+<td>-renorm &lt;mri_vol&gt;</td><td>renormalize using predicted intensity values in mri_vol</td></tr>
+<tr>
+<td>-flash</td><td>use FLASH forward model to predict intensity values</td></tr>
+<tr>
+<td>-flash_params &lt;filename&gt;</td><td>use FLASH forward model and tissue params in filename to predict</td></tr>
+<tr>
+<td>-renormalize &lt;wsize&gt; &lt;iter&gt;</td><td>renorm class means &lt;iter&gt; times after initial label with window of &lt;wsize&gt;</td></tr>
+<tr>
+<td>-r &lt;mri_vol&gt;</td><td>set input volume</td></tr>
+<tr>
+<td>-h</td><td>use GCA to histogram normalize input image</td></tr>
+<tr>
+<td>-a &lt;int n&gt;</td><td>mean filter n time to conditional densities</td></tr>
+<tr>
+<td>-w &lt;int n&gt; &lt;filename&gt;</td><td>write snapshots of gibbs process every n times to filename</td></tr>
+<tr>
+<td>-m &lt;mri_vol&gt;</td><td>use mri_vol to mask final labeling</td></tr>
+<tr>
+<td>-e &lt;int n&gt;</td><td>expand</td></tr>
+<tr>
+<td>-n &lt;int n&gt;</td><td>set max iterations to n (default=200)</td></tr>
+<tr>
+<td>-f &lt;int f&gt; &lt;float t&gt;</td><td>filter labeled volume with threshold t (default=.5) mode filter f (default=0)times</td></tr>
+<tr>
+<td>-L &lt;mri_vol&gt; &lt;LTA&gt;</td><td>longitudinal processing: mri_vol is label from tp1, LTA is registration from tp1 to current data</td></tr>
+<tr>
+<td>-RELABEL_UNLIKELY &lt;1/0&gt; &lt;wsize&gt; &lt;sigma&gt; &lt;thresh&gt;</td><td>reclassify voxels at least &lt;thresh&gt; std devs from the mean using a &lt;wsize&gt; Gaussian window (with &lt;sigma&gt; standard dev) to recompute priors and likelihoods</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>outvol</td><td>output volume</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>******************************************************</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mri_cc</p></html>
+</body>

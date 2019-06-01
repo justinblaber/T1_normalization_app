@@ -1,0 +1,93 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_anatomical_stats</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_anatomical_stats [options] &lt;subjectname&gt; &lt;hemi&gt; [&lt;surfacename&gt;]</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program computes a number of anatomical properties.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;subjectname&gt;</td><td>subject name</td></tr>
+<tr>
+<td>&lt;hemi&gt;</td><td>hemisphere</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None.</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-i &lt;low thresh&gt; &lt;hi thresh&gt;</td><td>only consider thicknesses in the specified range.</td></tr>
+<tr>
+<td>-l &lt;label file&gt;</td><td>limit calculations to specified label</td></tr>
+<tr>
+<td>-t &lt;thickness file&gt;</td><td>use specified file for computing thickness statistics</td></tr>
+<tr>
+<td>-a &lt;annotation file&gt;</td><td>compute properties for each label in the annotation file separately</td></tr>
+<tr>
+<td>-b</td><td>tabular output</td></tr>
+<tr>
+<td>-f &lt;tablefile&gt;</td><td>table output to tablefile (different format than -b). Must use -a or -l options to spec input.</td></tr>
+<tr>
+<td>-log &lt;logfile&gt;</td><td>Write stats to file named log</td></tr>
+<tr>
+<td>-nsmooth &lt;#&gt;</td><td>Smooth thicknessmap # of iterations before using it</td></tr>
+<tr>
+<td>-c &lt;ctab file&gt;</td><td>Output annotation files's colortable to text file</td></tr>
+<tr>
+<td>-noglobal</td><td>Do not compute global brain stats</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>Structure Name</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>Number of Vertices</td><td>unitless</td></tr>
+<tr>
+<td>Surface Area</td><td>mm^2, total surface area</td></tr>
+<tr>
+<td>Gray Matter</td><td>Volume mm, total gray matter volume</td></tr>
+<tr>
+<td>Average Thickness</td><td>mm, average cortical thickness</td></tr>
+<tr>
+<td>Thickness Std Dev</td><td>mm, +- standard error (mm)</td></tr>
+<tr>
+<td>Integrated Rectified Mean Curvature</td><td>mm^-1</td></tr>
+<tr>
+<td>Integrated Rectified Gaussian Curvature</td><td>mm^-2</td></tr>
+<tr>
+<td>Folding Index</td><td>unitless, a la Van Essen</td></tr>
+<tr>
+<td>Intrinsic Curvature Index</td><td>unitless, a la Van Essen</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mris_anatomical_stats -a subjid/label/lh.aparc.annot -b subjid lh</p>
+
+<h1>EXAMPLE 2</h1>
+<p>mris_anatomical_stats -l lh.cortex.label -b subjid lh</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mris_curvature_stats</p></html>
+</body>

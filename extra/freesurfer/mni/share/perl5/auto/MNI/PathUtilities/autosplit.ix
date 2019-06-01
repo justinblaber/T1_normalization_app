@@ -1,0 +1,16 @@
+# Index created by AutoSplit for blib/lib/MNI/PathUtilities.pm
+#    (file acts as timestamp)
+package MNI::PathUtilities;
+sub normalize_dirs 
+;
+sub split_path 
+;
+sub replace_dir 
+;
+sub replace_ext 
+;
+sub merge_paths 
+;
+sub expand_path 
+;
+1;

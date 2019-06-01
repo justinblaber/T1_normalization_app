@@ -1,0 +1,181 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_segstats</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_segstats --seg segvol --annot  subject hemi parc --slabel subject hemi label --sum file</p>
+
+<h1>DESCRIPTION</h1>
+<p> </p>
+
+<h1>POSITIONAL ARGUMENTS</h1></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--seg segvol</td><td>Input segmentation volume. A segmentation is a volume whose voxel values indicate a segmentation or class. This can be as complicaated as a FreeSurfer automatic cortical or subcortial segmentation or as simple as a binary mask. The format of segvol can be anything that mri_convert accepts as input (eg, analyze, nifti, mgh, bhdr, bshort, bfloat).<br /><br />SPECIFYING SEGMENTATION IDS<br /><br />There are three ways that the list of segmentations to report on<br />can be specified:<br />1. User specfies with --id.<br />2. User supplies a color table but does not specify --id. All the segmentations in the color table are then reported on. If the user specficies a color table and --id, then the segids from --id are used and the color table is only used to determine the name of the segmentation for reporint purposes.<br />3. If the user does not specify either --id or a color table, then all the ids from the segmentation volume are used.<br />This list can be further reduced by specifying masks and --excludeid.<br /><br />MEASURES OF BRAIN VOLUME<br /><br />There will be three measures of brain volume in the output summary file:<br />1. BrainSegNotVent - sum of the volume of the structures identified in the aseg.mgz volume this will include cerebellum but not ventricles, CSF and dura. Includes partial volume compensation with --pv. This is probably the number you want to report.<br />2. BrainMask - total volume of non-zero voxels in brainmask.mgz. This will include cerebellum, ventricles, and possibly dura. This is probably not what you want to report.<br />3. BrainSeg - sum of the volume of the structures identified in the aseg.mgz volume. This will  include cerebellum and ventricles but should exclude dura. This does not include partial volume compensation, so this number might be different than the sum of the segmentation volumes.<br />4. IntraCranialVol (ICV) - estimate of the intracranial volume based on the talairach transform. See surfer.nmr.mgh.harvard.edu/fswiki/eTIV for more details. This is the same measure as Estimated Total Intracranial Volume (eTIV).<br /><br />SUMMARY FILE FORMAT<br /><br />The summary file is an ascii file in which the segmentation statistics are reported. This file will have some 'header' information. Each header line begins with a '#'. There will be a row for each segmentation reported. The number and meaning of the columns depends somewhat how the program was run. The indentity of each column is given in the header. The first col is the row number. The second col is the segmentation id. The third col is the number of voxels in the segmentation. The fourth col is the volume of the segmentation in mm. If a color table was specified, then the next column will be the segmentation name. If an input volume was specified, then the next five columns will be intensity min, max, range, average, and standard deviation measured across the voxels in the segmentation.</td></tr>
+<tr>
+<td>--annot  subject hemi parc</td><td>Create a segmentation from hemi.parc.annot. If parc is<br />aparc or aparc.a2005s, then the segmentation numbers will match those in $FREESURFER_HOME/FreeSurferColorLUT.txt (and so aparc+aseg.mgz). The numbering can also be altered with --segbase. If an input is used, it must be a surface ovelay with the same dimension as the parcellation. This functionality makes mri_segstats partially redundant with mris_anatomical_stats. If parc is a full path to an annotation, then that file is used instead. </td></tr>
+<tr>
+<td>--slabel subject hemi label</td><td>Create a segmentation from the given surface label. The points in the label are given a value of 1; 0 for outside.</td></tr>
+<tr>
+<td>--label-thresh threshold</td><td>Select only those label points that have a stat value greater than threshold</td></tr>
+<tr>
+<td>--sum file</td><td>ASCII file in which summary statistics are saved. See SUMMARY FILE below for more information.</td></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--pv pvvol</td><td>Use pvvol to compensate for partial voluming. This should result in more accurate volumes. Usually, this is only done when computing anatomical statistics. Usually, the mri/norm.mgz volume is used. Not with --annot.</td></tr>
+<tr>
+<td>--i invol</td><td>Input volume from which to compute more statistics, including min, max, range, average, and standard deviation as measured spatially across each segmentation. The input volume must be the same size and dimension as the segmentation volume.</td></tr>
+<tr>
+<td>--seg-erode Nerodes</td><td>Erode segmentation boundaries by Nerodes.</td></tr>
+<tr>
+<td>--frame frame</td><td>Report statistics of the input volume at the 0-based frame number. Frame is 0 by default.</td></tr>
+<tr>
+<td>--robust percent</td><td> compute stats after excluding percent from high<br />      and low values (volume reported is still full volume).</td></tr>
+<tr>
+<td>--sqr</td><td>compute the square of the input prior to computing stats.</td></tr>
+<tr>
+<td>--sqrt</td><td>compute the square root of the input prior to computing stats.</td></tr>
+<tr>
+<td>--mul val</td><td>multiply input by val</td></tr>
+<tr>
+<td>--div val</td><td>divide input by val</td></tr>
+<tr>
+<td>--snr</td><td>save mean/std as extra column in output table</td></tr>
+<tr>
+<td>--abs</td><td>compute absolute value of input before spatial average</td></tr>
+<tr>
+<td>--accumulate</td><td>save mean*nvoxels instead of mean</td></tr>
+<tr>
+<td>--ctab ctabfile</td><td>FreeSurfer color table file. This is a file used by FreeSurfer to specify how each segmentation index is mapped to a segmentation name and color. See $FREESURFER_HOME/FreeSurferColorLUT.txt for example. The ctab can be used to specify the segmentations to report on or simply to supply human-readable names to segmentations chosen with --id. See SPECIFYING SEGMENTATION IDS below.</td></tr>
+<tr>
+<td>--ctab-default</td><td>Same as --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt</td></tr>
+<tr>
+<td>--ctab-gca gcafile</td><td>Get color table from the given GCA file. Eg, $FREESURFER_HOME/average/RB_all_YYYY-MM-DD.gca This can be convenient when the seg file is that produced by mri_ca_label (ie, aseg.mgz) as it will only report on those segmentations that were actually considered during mri_ca_label. Note that there can still be some labels do not have any voxels in the report.</td></tr>
+<tr>
+<td>--id segid &lt;segid2 ...&gt;</td><td>Specify numeric segmentation ids. Multiple ids can be specified with multiple IDs after a single --id or with multiple --id invocations. SPECIFYING SEGMENTATION IDS.</td></tr>
+<tr>
+<td>--excludeid segid</td><td>Exclude the given segmentation id(s) from report. This can be convenient for removing id=0.</td></tr>
+<tr>
+<td>--excl-ctxgmwm</td><td>Exclude cortical gray and white matter. These are assumed to be IDs 2, 3, 41, and 42. The volume structures are more accurately measured using surface-based methods (see mris_volume).</td></tr>
+<tr>
+<td>--surf-wm-vol</td><td>Compute cortical matter volume based on the volume encompassed by the<br />white surface. This is more accurate than from the aseg. The aseg values for these are still reported in the table, but there will be the following lines in the table:<br />  # surface-based-volume mm3 lh-cerebral-white-matter 266579.428518<br />  # surface-based-volume mm3 rh-cerebral-white-matter 265945.120671<br /></td></tr>
+<tr>
+<td>--surf-ctx-vol</td><td>compute cortical volumes from surf</td></tr>
+<tr>
+<td>--empty</td><td>Report on segmentations listed in the color table even if they are not found in the segmentation volume.</td></tr>
+<tr>
+<td>--ctab-out ctaboutput</td><td>Create an output color table (like FreeSurferColor.txt) with just the segmentations reported in the output.</td></tr>
+</table>
+<h3>Masking options</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--mask maskvol</td><td>Exlude voxels that are not in the mask. Voxels to be excluded are assigned a segid of 0. The mask volume may be binary or continuous.The masking criteria is set by the mask threshold, sign, frame, and invert parameters (see below). The mask volume must be the same size and dimension as the segmentation volume. If no voxels meet the masking criteria, then mri_segstats exits with an error.</td></tr>
+<tr>
+<td>--maskthresh thresh</td><td>Exlude voxels that are below thresh (for pos sign), above -thresh (for neg sign), or between -thresh and +thresh (for abs sign). Default is 0.5.</td></tr>
+<tr>
+<td>--masksign sign</td><td>Specify sign for masking threshold. Choices are abs, pos, and neg. Default is abs.</td></tr>
+<tr>
+<td>--maskframe frame</td><td>Derive the mask volume from the 0-based frameth frame.</td></tr>
+<tr>
+<td>--maskinvert</td><td>After applying all the masking criteria, invert the mask.</td></tr>
+<tr>
+<td>--maskerode nerode</td><td>erode mask</td></tr>
+</table>
+<h3>Brain volume options</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--brain-vol-from-seg</td><td>Get volume of brain as the sum of the volumes of the segmentations that are in the brain. Based on CMA/FreeSurferColorLUT.txt. The number of voxels and brain volume are stored as values in the header of the summary file with tags nbrainsegvoxels and brainsegvolume.</td></tr>
+<tr>
+<td>--brainmask brainmask</td><td>Load brain mask and compute the volume of the brain as the non-zero voxels in this volume. The number of voxels and brain volume are stored as values in the header of the summary file with tags nbrainmaskvoxels and brainmaskvolume.</td></tr>
+<tr>
+<td>--subcortgray</td><td>compute volume of subcortical gray matter</td></tr>
+<tr>
+<td>--totalgray</td><td>compute volume of total gray matter</td></tr>
+<tr>
+<td>--etiv</td><td>compute intracranial volume from subject/mri/transforms/talairach.xfm</td></tr>
+<tr>
+<td>--etiv-only</td><td>compute intracranial volume from subject/mri/transforms/talairach.xfm and exit</td></tr>
+<tr>
+<td>--old-etiv-only</td><td>compute intracranial volume from subject/mri/transforms/talairach_with_skull.lta and exit</td></tr>
+<tr>
+<td>--talxfm fname</td><td>specify path to talairach.xfm file for etiv</td></tr>
+<tr>
+<td>--euler</td><td>Write out number of defect holes in orig.nofix based on the euler number. This is the orig file prior to topology fixing. </td></tr>
+</table>
+<h3>Average waveform options</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--avgwf textfile</td><td><br />For each segmentation, computes the average waveform across all the voxels in the segmentation (excluding voxels masked out). The results are saved in an ascii text file with number of rows equal to the number of frames and number of columns equal to the number of segmentations reported. The order of segmentations is the same order as in the summary file.<br /></td></tr>
+<tr>
+<td>--sumwf textfile</td><td>Same as --avgwf but computes the sum instead of average</td></tr>
+<tr>
+<td>--avgwfvol mrivol</td><td>Same as --avgwf except that the resulting waveforms are stored in a binary mri volume format (eg, analyze, nifti, mgh, etc) with number of columns equal to the number segmentations, number of rows = slices = 1, and the number of frames equal that of the input volume. This may be more convenient than saving as an ascii text file. The order of segmentations is the same order as in the summary file.</td></tr>
+<tr>
+<td>--avgwf-remove-mean </td><td>Remove temporal mean from avgwf and avgwfvol </td></tr>
+<tr>
+<td>--sfavg textfile</td><td>save mean across space and frame</td></tr>
+<tr>
+<td>--vox C R S</td><td>replace seg with all 0s except at CRS</td></tr>
+<tr>
+<td>--help</td><td>print out information on how to use this program</td></tr>
+<tr>
+<td>--version</td><td>print out version and exit</td></tr>
+<tr>
+<td>--replace ID1 ID2</td><td>Replace ID1 with ID2</td></tr>
+<tr>
+<td>--replace-file file</td><td>Replace segmentations based pairs in file</td></tr>
+<tr>
+<td>--gtm-default-seg-merge</td><td>Replace segmentations based on GTM default</td></tr>
+<tr>
+<td>--gtm-default-seg-merge-choroid</td><td>Replace segmentations based on GTM default excluding choroid</td></tr>
+<tr>
+<td>--qa-stats subject statsfile</td><td>Computes stats that may be useful for quality control. Only these two arguments are needed. Output has 17 items: (1) subjectname, (2) number of control points, (3) number of WM voxels erased, (4) number of WM voxels filled, (5) number of brainmask.mgz voxels erased (relative to brainmask.auto.mgz), (6) number of brainmask.mgz voxels cloned, (7) number of aseg.mgz voxels changed, (8) number of holes in lh.orig.nofix, (9) number of holes in rh.orig.nofix, (10) total number of holes, (11) ratio of number of voxels in brainmask.mgz to the eTIV, (12) mean norm.mgz in WM voxels, (13) spatial std of WM,(14) min WM, (15) max WM, (16) range WM, (17) WM SNR (mean/std). The WM statistics are computed from a WM mask in aparc+aseg.mgz eroded by 3 voxels. The statistics are \"robust\" meaning that the top and bottom 2% are excluded before computing the stats.<br />      </td></tr>
+<tr>
+<td>--sd SUBJECTS_DIR</td><td>Set SUBJECTS_DIR env var</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_segstats --seg $SUBJECTS_DIR/bert/mri/aseg --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt --excludeid 0 --sum bert.aseg.sum<br /><br />This will compute the segmentation statistics from the automatic FreeSurfer subcortical segmentation for non-empty segmentations and excluding segmentation 0 (UNKNOWN). The results are stored in bert.aseg.sum.</p>
+
+<h1>EXAMPLE 2</h1>
+<p>mri_segstats --seg $SUBJECTS_DIR/bert/mri/aseg --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt --excludeid 0 --sum bert.aseg.sum --i $SUBJECTS_DIR/bert/mri/orig<br /><br />Same as above but intensity statistics from the orig volume will also be reported for each segmentation.</p>
+
+<h1>EXAMPLE 3</h1>
+<p>mri_segstats --seg aseg-in-func.img --ctab $FREESURFER_HOME/FreeSurferColorLUT.txt --excludeid 0 --i func.img --mask spmT.img --maskthresh 2.3 --sum bert.aseg-in-func.sum --avgwf bert.avgwf.dat --avgwfvol bert.avgwf.img<br /><br />This will compute the segmentation statistics from the automatic FreeSurfer subcortical segmentation resampled into the functional space (see below and mri_label2vol --help). It will report intensity statistics from the 4D analyze volume func.img (same dimension as aseg-in-func.img). The segmentation is masked by thresholding the spmT.img map at 2.3. The average functional waveform of each segmentation is reported in the ascii file bert.avgwf.dat and in the 4D analyze 'volume' bert.avgwf.img. This is not a real volume but just another way to save the data that may be more convenient than ascii.</p>
+
+<h1>EXAMPLE 4</h1>
+<p>mri_label2vol --seg $SUBJECTS_DIR/bert/mri/aseg --temp func.img --reg register.dat --fillthresh 0.5 --o aseg-in-func.img<br /><br />This uses mri_label2vol to resample the automatic subcortical segmentation to the functional space. For more information see mri_label2vol --help.</p>
+
+<h1>EXAMPLE 5</h1>
+<p>mri_label2vol --annot $SUBJECTS_DIR/bert/label/lh.aparc.annot --temp func.img --reg register.dat --fillthresh 0.5 --hemi lh --subject bert --proj frac 0 .1 1 --o lh.aparc-in-func.img<br /><br />This uses mri_label2vol to resample the automatic cortical segmentation to the functional space. For more information see mri_label2vol --help.</p>
+
+<h1>EXAMPLE 6</h1>
+<p>mri_segstats --annot bert lh aparc --i lh.thickness --sum lh.thickness.sum<br /><br />Produce a summary of the thickness in each parcellation of aparc. This will give the same mean thicknesses as that created by mris_anatomical_stats and found in stats/lh.aparc.stats.</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mri_label2vol, tkregister2, mri_vol2roi.</p></html>
+</body>

@@ -1,0 +1,625 @@
+#! /bin/csh -f
+
+#
+# rawfunc2tal-sess
+#
+# Original Author: Doug Greve
+# CVS Revision Info:
+#    $Author: zkaufman $
+#    $Date: 2015/12/10 22:51:30 $
+#    $Revision: 1.28 $
+#
+# Copyright (C) 2002-2007,
+# The General Hospital Corporation (Boston, MA). 
+# All rights reserved.
+#
+# Distribution, usage and copying of this software is covered under the
+# terms found in the License Agreement file named 'COPYING' found in the
+# FreeSurfer source code root directory, and duplicated here:
+# https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferOpenSourceLicense
+#
+# General inquiries: freesurfer@nmr.mgh.harvard.edu
+# Bug reports: analysis-bugs@nmr.mgh.harvard.edu
+#
+
+set VERSION = '$Id: rawfunc2tal-sess,v 1.28 2015/12/10 22:51:30 zkaufman Exp $'
+
+set inputargs = ($argv);
+
+set fsd        = bold;
+set instem     = ();
+set outstem    = ();
+set regfile    = ();
+set RegDOF     = 6;
+set target = mni305
+set res = 2;
+set talxfm = talairach.xfm
+set interp = trilin
+set PerRun = 1;
+set maskname = brain
+set maskdir = masks
+set maskstem = ();
+set fwhm = ();
+set MaskedSmoothing = 1;
+set RunListFile = ();
+set UpdateOnly = 0;
+set ExpKey = ();
+set ExpKeyNeeded = 0;
+set SliceOrder = ();
+set SliceDelayFile = ();
+set UseB0DC = 0;
+set b0dcmapstem = b0dcmap
+set ApplySubCortMask = 1;
+set UseCVS = 0;
+
+set nolog = 0;
+set debug = 0;
+set PrintHelp = 0;
+
+set outfmt = nii
+if($?FSF_OUTPUT_FORMAT) then
+  set outfmt = $FSF_OUTPUT_FORMAT
+endif
+
+## If there are no options, just print the usage ##
+if($#argv == 0) goto usage_exit;
+set n = `echo $argv | grep -e  -version | wc -l` 
+if($n != 0) then
+  echo $VERSION
+  exit 0;
+endif
+set n = `echo $argv | grep -e -help | wc -l` 
+if($n != 0) then
+  set PrintHelp = 1;  
+  goto usage_exit;
+endif
+
+source $FREESURFER_HOME/sources.csh
+
+goto parse_args;
+parse_args_return:
+
+set SessList = `getsesspath $inputargs`;
+if($status || $#SessList == 0) then
+  getsesspath $inputargs 
+  echo "ERROR: cannot find any sessions"
+  exit 1;
+endif
+
+goto check_params;
+check_params_return:
+
+set ProjectDir = `pwd`;
+
+## Loop through each session ##
+@ nthsess = 0;
+foreach sess ($SessList)
+  set sessid = `basename $sess`
+  @ nthsess = $nthsess + 1;
+
+  ##### Create a log file ######
+  set LF = /dev/null
+  if(! $nolog) then
+    set logdir = $ProjectDir/log;
+    mkdir -p $logdir
+    set LF = $logdir/rawfunc2tal-sess.$sessid.$fsd.$outstem$ExpKey.log
+    if(-e $LF) mv $LF $LF.old
+  endif
+  echo "rawfunc2tal-sess log file" >> $LF
+  echo $VERSION >> $LF
+  uname -a >> $LF
+  date >> $LF
+  pwd >> $LF
+  echo $0 $inputargs  >> $LF 
+  echo UpdateOnly $UpdateOnly >> $LF 
+  set subject = `cat $sess/subjectname`
+
+  echo "------------------------------ " |& tee -a $LF
+  echo "$nthsess/$#SessList $sessid $subject" |& tee -a $LF
+
+  ## Make sure the functional subdirectory exists ##
+  if(! -e $sess/$fsd) then
+    echo "ERROR: $sess/$fsd does not exist" |& tee -a $LF
+    exit 1;
+  endif
+
+  set b0dcmap = ();
+  if($UseB0DC) then
+    set b0dcmap = `stem2fname $sess/$fsd/$b0dcmapstem`;
+    if($status) then
+      echo "$b0dcmap"|& tee -a $LF
+      exit 1;
+    endif
+  endif
+
+  if(! $PerRun) then
+    set reg = $sess/$fsd/$regfile
+    if(! -e $reg) then
+      echo "ERROR: cannot find $reg" | tee -a $LF
+      echo "Try running register-sess" | tee -a $LF
+      exit 1;
+    endif
+    set maskstempath = $sess/$fsd/$maskdir/$maskname
+    set mask = `stem2fname $maskstempath`
+    if($status) then
+      echo "$mask" | tee -a $LF
+      echo "Try running mkbrainmask-sess" | tee -a $LF
+      exit 1;
+    endif
+    # Create the mask in the mni305/CVS space, create .pr then merge later
+    set outmask = $sess/$fsd/$maskdir/$maskstem$ExpKey.$outfmt
+    set UpdateNeeded = `UpdateNeeded $outmask $reg $mask $b0dcmap`;
+    if(! $UpdateOnly) set UpdateNeeded = 1;    
+    if($UpdateNeeded) then
+      if($UseCVS == 0) then
+        set cmd = (mri_vol2vol --mov $mask --reg $reg \
+          --tal --talres $res --talxfm $talxfm --nearest \
+          --no-save-reg --o $outmask)
+        if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+      else
+        set gcam = $SUBJECTS_DIR/$subject/cvs/final_CVSmorph_tocvs_avg35_inMNI152.m3z
+	if(! -e $gcam) then
+          echo "ERROR: cannot find $gcam" | tee -a $LF
+          exit 1;
+        endif
+        set dstreg = $FREESURFER_HOME/subjects/cvs_avg35_inMNI152/mri.2mm/register.lta
+        set cmd = (mri_vol2vol --gcam $mask $reg $gcam $dstreg)
+        if($UseB0DC) set cmd = ($cmd $b0dcmap)
+        if(! $UseB0DC) set cmd = ($cmd 0)
+        set cmd = ($cmd 0 $outmask)
+      endif
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;
+      # Take intersection with whole brain or subcort mask
+      set mask = $brainmask
+      if($ApplySubCortMask) set mask = $subcortmask
+      set cmd = (mri_mask $outmask $mask $outmask)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;
+    else
+      echo "$outmask does not need updating" | tee -a $LF
+    endif
+  endif
+
+  set RunList = `getrunlist $sess/$fsd $RunListFile`;
+  if($status) then
+    echo "$RunList" |& tee -a $LF
+    exit 1;
+  endif
+
+  # Build masks for each run
+  if($PerRun) then
+    foreach Run ($RunList)
+      echo "  $nthsess/$#SessList $sessid $Run ----------------" |& tee -a $LF
+      echo "    `date`"  |& tee -a $LF
+      set funcdir = $sess/$fsd/$Run
+
+      set reg = $sess/$fsd/$Run/$regfile
+      if(! -e $reg) then
+        echo "ERROR: cannot find $reg" | tee -a $LF
+        echo "Try running register-sess with -per-run" | tee -a $LF
+        exit 1;
+      endif
+      set maskstempath = $sess/$fsd/$Run/$maskdir/$maskname
+      set mask = `stem2fname $maskstempath`
+      if($status) then
+        echo "$mask" | tee -a $LF
+        echo "Try running mkbrainmask-sess with -per-run" | tee -a $LF
+        exit 1;
+      endif
+
+      # Create the mask in the mni305/CVS space, create .pr then merge later
+      set outmask = $sess/$fsd/$Run/$maskdir/$maskstem$ExpKey.pr.$outfmt
+      set UpdateNeeded = `UpdateNeeded $outmask $reg $mask $b0dcmap`;
+      if(! $UpdateOnly) set UpdateNeeded = 1;    
+      if($UpdateNeeded) then
+        if($UseCVS == 0) then
+          set cmd = (mri_vol2vol --mov $mask --reg $reg \
+            --tal --talres $res --talxfm $talxfm --nearest \
+            --no-save-reg --o $outmask)
+          if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+        else
+          set gcam = $SUBJECTS_DIR/$subject/cvs/final_CVSmorph_tocvs_avg35_inMNI152.m3z
+          if(! -e $gcam) then
+            echo "ERROR: cannot find $gcam" | tee -a $LF
+            exit 1;
+          endif
+          set dstreg = $FREESURFER_HOME/subjects/cvs_avg35_inMNI152/mri.2mm/register.lta
+          set cmd = (mri_vol2vol --gcam $mask $reg $gcam $dstreg)
+          if($UseB0DC) set cmd = ($cmd $b0dcmap)
+          if(! $UseB0DC) set cmd = ($cmd 0)
+          set cmd = ($cmd 0 $outmask)
+        endif
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+        # Take intersection with whole brain
+        set mask = $brainmask
+        if($ApplySubCortMask) set mask = $subcortmask
+        set cmd = (mri_mask $outmask $mask $outmask)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+      else
+        echo "$outmask does not need updating" | tee -a $LF
+      endif
+    end  # Loop over runs
+
+    # Merge run-level masks and prune
+    set prmasklist = ()
+    foreach Run ($RunList)
+      set prmask = $sess/$fsd/$Run/$maskdir/$maskstem$ExpKey.pr.$outfmt
+      set prmasklist = ($prmasklist $prmask)
+    end
+    set finalmask = $sess/$fsd/$maskdir/$maskstem$ExpKey.$outfmt
+    set UpdateNeeded = `UpdateNeeded $finalmask $prmasklist`;
+    if(! $UpdateOnly) set UpdateNeeded = 1;    
+    if($UpdateNeeded) then
+      set cmd = (mri_concat --o $finalmask --mean $prmasklist)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;      
+      set cmd = (mri_binarize --i $finalmask --min 10e-10 --o $finalmask)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;      
+      # Now copy it to each run, remove the .pr
+      foreach Run ($RunList)
+        set prmask = $sess/$fsd/$Run/$maskdir/$maskstem$ExpKey.$outfmt
+        cp $finalmask $prmask |& tee -a $LF
+        if($status) exit 1;      
+      end
+    else
+      echo "$finalmask does not need updating" | tee -a $LF
+    endif
+  endif
+
+  # Convert the native functional space data to mni305/cvs
+  foreach Run ($RunList)
+    echo "  $nthsess/$#SessList $sessid $Run ----------------" |& tee -a $LF
+    echo "    `date`"  |& tee -a $LF
+    set funcdir = $sess/$fsd/$Run
+
+    # Get the mask and reg to use
+    if($PerRun) then
+      set outmask = $sess/$fsd/$Run/$maskdir/$maskstem$ExpKey.$outfmt
+      set reg = $sess/$fsd/$Run/$regfile
+    else
+      set outmask = $sess/$fsd/$maskdir/$maskstem$ExpKey.$outfmt
+      set reg = $sess/$fsd/$regfile
+    endif
+    set invol = `stem2fname $funcdir/$instem`
+    if($status) then
+      echo "$invol" |& tee -a $LF
+      exit 1;
+    endif
+
+    set outvol = $funcdir/$outstem$ExpKey.$outfmt
+    set UpdateNeeded = `UpdateNeeded $outvol $invol $reg $outmask`;
+    if(! $UpdateOnly) set UpdateNeeded = 1;    
+    if($UpdateNeeded == 0) then
+      echo "    $sessid $Run Update not needed" | tee -a $LF
+      continue
+    endif
+
+    if($UseCVS == 0) then
+      set cmd = (mri_vol2vol --mov $invol --reg $reg \
+        --tal --talres $res --talxfm $talxfm --interp $interp \
+        --no-save-reg --o $outvol)
+      if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+    else
+      set gcam = $SUBJECTS_DIR/$subject/cvs/final_CVSmorph_tocvs_avg35_inMNI152.m3z
+      if(! -e $gcam) then
+        echo "ERROR: cannot find $gcam" | tee -a $LF
+        exit 1;
+      endif
+      set dstreg = $FREESURFER_HOME/subjects/cvs_avg35_inMNI152/mri.2mm/register.lta
+      set cmd = (mri_vol2vol --gcam $invol $reg $gcam $dstreg)
+      if($UseB0DC) set cmd = ($cmd $b0dcmap)
+      if(! $UseB0DC) set cmd = ($cmd 0)
+      set cmd = ($cmd 0 $outvol)
+    endif
+    echo $cmd | tee -a $LF
+    $cmd | tee -a $LF
+    if($status) exit 1;
+
+    # Smooth if desired
+    if($fwhm > 0) then
+      set cmd = (mri_fwhm --i $outvol --o $outvol --smooth-only) 
+      if($#fwhm)   set cmd = ($cmd --fwhm $fwhm); # 3D smoothing
+      if($MaskedSmoothing) set cmd = ($cmd --mask $outmask)
+      echo $cmd |& tee -a $LF
+      $cmd |& tee -a $LF
+      if($status) exit 1;
+    endif
+
+  end  # Loop over runs
+
+end  # foreach sess ($SessList)
+
+echo "" |& tee -a $LF
+date |& tee -a $LF
+echo "rawfunc2tal-sess completed " |& tee -a $LF
+
+exit 0;
+
+############--------------##################
+parse_args:
+set cmdline = "$argv";
+while( $#argv != 0 )
+
+  set flag = $argv[1]; shift;
+  
+  switch($flag)
+
+    case "-i":
+    case "-instem":
+      if ( $#argv == 0) goto arg1err;
+      set instem = $argv[1]; shift;
+      breaksw
+
+    case "-fsd":
+      if ( $#argv == 0) goto arg1err;
+      set fsd = $argv[1]; shift;
+      breaksw
+
+    case "-runlistfile":
+    case "-rlf":
+      if ( $#argv == 0) goto arg1err;
+      set RunListFile = $argv[1]; shift;
+      breaksw
+
+    case "-fwhm":
+      if ( $#argv == 0) goto arg1err;
+      set fwhm = $argv[1]; shift;
+      breaksw
+
+    case "-cvs"
+      set target = cvs_avg35_inMNI152;
+      set UseCVS = 1;
+      set res = 2;
+      breaksw
+
+    case "-no-masked-smooth":
+      set MaskedSmooth = 0;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-per-run":
+    case "-perrun":
+      set PerRun = 1;
+      breaksw
+
+    case "-per-session":
+    case "-no-per-run":
+    case "-no-perrun":
+      set PerRun = 0;
+      #set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-update":
+      set UpdateOnly = 1;
+      breaksw
+
+    case "-force":
+      set UpdateOnly = 0;
+      breaksw
+
+    case "-nearest":
+      set interp = "nearest"
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-subcort-mask":
+    case "-subcort":
+      set ApplySubCortMask = 1;
+      breaksw
+    case "-no-subcort-mask":
+    case "-no-subcort":
+      set ApplySubCortMask = 0;
+      breaksw
+
+    case "-trilin":
+      set interp = "trilin"
+      breaksw
+
+    case "-1mm":
+      set res = 1;
+      breaksw
+
+    case "-xfm":
+      if($#argv < 1) goto arg1err;
+      set talxfm = $argv[1]; shift;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-stc":
+    case "-sliceorder":
+    case "-so":
+      if ( $#argv == 0) goto arg1err;
+      set SliceOrder = $argv[1]; shift;
+      if($SliceOrder != siemens && $SliceOrder != up && $SliceOrder != down && \
+         $SliceOrder != odd && $SliceOrder != even && $SliceOrder != none) then
+         echo "ERROR: -stc is $SliceOrder, must be siemens, up, down, odd, even, or none"
+         exit 1;
+      endif
+      breaksw
+
+    case "-sdf":
+      if ( $#argv == 0) goto arg1err;
+      set SliceDelayFile = $argv[1]; shift;
+      set DoSTC = 1;
+      breaksw
+
+    case "-reg":
+      if($#argv < 1) goto arg1err;
+      set regfile = $argv[1]; shift;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-expkey":
+      if($#argv < 1) goto arg1err;
+      set ExpKey = $argv[1]; shift;
+      set ExpKey = (.$ExpKey); # prepend a dot
+      breaksw
+
+    case "-b0dc":
+    case "-b0dcor":
+    case "-vsm":
+      set UseB0DC = 1;
+      set ExpKey = ".b0dc"
+      breaksw
+
+    # these should not be used
+    case "-o":
+    case "-outstem":
+      if ( $#argv == 0) goto arg1err;
+      set outstem = $argv[1]; shift;
+      breaksw
+    case "-mask":
+      # output mask stem
+      if ( $#argv == 0) goto arg1err;
+      set maskstem = $argv[1]; shift;
+      breaksw
+
+    case "-nolog":
+      set nolog = 1;
+      breaksw
+
+    case "-debug":
+      set debug = 1;
+      set verbose = 1;
+      set echo = 1;
+      breaksw
+
+    case "-cwd":
+      breaksw
+
+    case "-s":
+    case "-sf":
+    case "-df":
+    case "-d":
+    case "-g":
+      shift;
+      breaksw
+
+    default:
+      echo ERROR: Flag $flag unrecognized. 
+      echo $cmdline
+      exit 1
+      breaksw
+  endsw
+
+end
+
+goto parse_args_return;
+############--------------##################
+
+############--------------##################
+check_params:
+
+if($#fwhm == 0) then
+  echo "ERROR: you must enter a FWHM. Use 0 for no smoothing."
+  exit 1;
+endif
+if($ExpKeyNeeded && $#ExpKey == 0) then
+  echo "ERROR: experts key needed (-expkey)"
+  exit 1;
+endif
+
+if($#instem == 0) then
+  if($PerRun)   set instem = fmcpr
+  if(! $PerRun) set instem = fmc
+  if($#SliceOrder != 0) set instem = $instem.$SliceOrder
+  if($#SliceDelayFile != 0) set instem = $instem.sdf
+endif
+
+if($#outstem == 0) set outstem = $instem
+set outstem = $outstem.sm$fwhm.$target.$res"mm"
+
+if($#maskstem == 0) set maskstem = $maskname
+set maskstem = $maskstem.$target.$res"mm"
+
+if($#regfile == 0) then
+  if(! $UseB0DC) set regfile = register.dof$RegDOF.lta
+  if($UseB0DC)   set regfile = register.dof$RegDOF.b0dc.lta
+endif
+
+if($UseCVS == 0) then
+  if($res == 2) then
+    set subcortmask = $FREESURFER_HOME/subjects/fsaverage/mri.2mm/subcort.mask.mgz
+    set brainmask = $FREESURFER_HOME/subjects/fsaverage/mri.2mm/brainmask.mgz
+  else
+    set subcortmask = $FREESURFER_HOME/subjects/fsaverage/mri/subcort.mask.1mm.mgz
+    set brainmask = $FREESURFER_HOME/subjects/fsaverage/mri/brainmask.mgz
+  endif
+else
+  set subcortmask = $FREESURFER_HOME/subjects/cvs_avg35_inMNI152/mri.2mm/subcort.mask.mgz
+  set brainmask = $FREESURFER_HOME/subjects/cvs_avg35_inMNI152/mri.2mm/brainmask.mgz
+endif
+if($ApplySubCortMask && ! -e $subcortmask) then
+  echo "ERROR: cannot find $subcortmask"      
+  exit 1;
+endif
+
+
+goto check_params_return;
+############--------------##################
+
+############--------------##################
+arg1err:
+  echo "ERROR: flag $flag requires one argument"
+  exit 1
+############--------------##################
+
+############--------------##################
+usage_exit:
+  echo "rawfunc2tal-sess"
+  echo ""
+  echo " Session Arguments (some required)"
+  echo "  -sf sessidfile  ..."
+  echo "  -df srchdirfile ..."
+  echo "  -s  sessid      ..."
+  echo "  -d  srchdir     ..."
+  echo ""
+  echo "  -fwhm FWHMmm : smooth by FWHM mm  (enter 0 for no smoothing)"
+  echo ""
+  echo " Optional Arguments"
+  echo "  -1mm         : set output resolution to 1mm (default is 2mm)"
+  echo "  -i instem  : default is fmcpr"
+  echo "  -fsd dir     : functional subdirectory ($fsd)"
+  echo "  -rlf RLF     : run-list file"
+  echo ""
+  echo "Expert Options"
+  echo "  -no-masked-smooth : do not mask when smoothing"
+  echo "  -nearest     : use nearest neighbor interp (default is trilin)"
+  echo "  -xfm tal.xfm : xfm file found in subject/mri/transforms (default is $talxfm)"
+  echo "  -reg regfile : default is register.dof$RegDOF.lta"
+  echo "  -per-session : use session-level registration and mask instead of -per-run"
+  echo "  -no-subcort-mask : do not apply subcortical mask"
+  echo "  -cvs : use cvs_avg35_inMNI152 instead of MNI305 (res fixed at 2mm)"
+  echo ""
+  echo "Other options"
+  echo "  -update : only run if update is needed"
+  echo "  -force : force an update (default)"
+  echo "  -version       : print version and exit"
+  echo "  -debug"
+  echo ""
+  if(! $PrintHelp ) exit 1;
+
+  echo " "
+  echo "$VERSION "
+  echo " "
+
+  cat $0 | awk 'BEGIN{prt=0}{if(prt) print $0; if($1 == "BEGINHELP") prt = 1 }'
+exit 1;
+
+#---- Everything below here is printed out as part of help -----#
+BEGINHELP
+
+Resamples raw data into "talairach" space. This is MNI305 space
+sampled at 2mm isotropic.
+
+

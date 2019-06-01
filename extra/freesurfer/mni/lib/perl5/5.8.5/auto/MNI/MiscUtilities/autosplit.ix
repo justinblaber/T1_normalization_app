@@ -1,0 +1,13 @@
+# Index created by AutoSplit for blib/lib/MNI/MiscUtilities.pm
+#    (file acts as timestamp)
+package MNI::MiscUtilities;
+sub timestamp  ;
+sub userstamp  ;
+sub lcompare  ;
+sub nlist_equal 
+;
+sub make_banner 
+;
+sub shellquote 
+;
+1;

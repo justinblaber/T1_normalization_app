@@ -1,0 +1,93 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_fix_topology</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_fix_topology [options] &lt;subject name&gt; &lt;hemisphere&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program computes a mapping from the unit sphere onto the surface of the cortex from a previously generated approximation of the cortical surface, thus guaranteeing a topologically correct surface.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;subject name&gt;</td><td>subject name</td></tr>
+<tr>
+<td>&lt;hemisphere&gt;</td><td>hemisphere</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-orig origname</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-sphere spherename</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-inflated inflatedname</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-wi</td><td>write fixed inflated</td></tr>
+<tr>
+<td>-verbose </td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-verbose_low </td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-warnings</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-errors</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-movies</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-intersect</td><td>check if the final surface self-intersects</td></tr>
+<tr>
+<td>-mappings</td><td>generate several different mappings</td></tr>
+<tr>
+<td>-correct_defect N</td><td>correct defect N only</td></tr>
+<tr>
+<td>-niters N</td><td>stop genetic algorithm after N iterations</td></tr>
+<tr>
+<td>-genetic</td><td>use genetic search</td></tr>
+<tr>
+<td>-ga</td><td>optimize genetic search</td></tr>
+<tr>
+<td>-optimize</td><td>optimize genetic search</td></tr>
+<tr>
+<td>-random N</td><td>use random search with N iterations</td></tr>
+<tr>
+<td>-seed N</td><td>set random number generator to seed N</td></tr>
+<tr>
+<td>-diag</td><td>sets DIAG_SAVE_DIAGS</td></tr>
+<tr>
+<td>-mgz</td><td>assume volumes are in mgz format</td></tr>
+<tr>
+<td>-s N</td><td>smooth corrected surface by N iterations</td></tr>
+<tr>
+<td>-v D</td><td>set diagnostic level to D</td></tr>
+<tr>
+<td>-help</td><td>print help and exit</td></tr>
+<tr>
+<td>-version</td><td>print version and exit</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

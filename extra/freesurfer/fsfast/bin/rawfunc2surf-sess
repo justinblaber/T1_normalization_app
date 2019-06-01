@@ -1,0 +1,615 @@
+#! /bin/csh -f
+
+#
+# rawfunc2surf-sess
+#
+# Original Author: Doug Greve
+# CVS Revision Info:
+#    $Author: zkaufman $
+#    $Date: 2015/12/10 22:51:30 $
+#    $Revision: 1.28 $
+#
+# Copyright (C) 2002-2007,
+# The General Hospital Corporation (Boston, MA). 
+# All rights reserved.
+#
+# Distribution, usage and copying of this software is covered under the
+# terms found in the License Agreement file named 'COPYING' found in the
+# FreeSurfer source code root directory, and duplicated here:
+# https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferOpenSourceLicense
+#
+# General inquiries: freesurfer@nmr.mgh.harvard.edu
+# Bug reports: analysis-bugs@nmr.mgh.harvard.edu
+#
+
+set VERSION = '$Id: rawfunc2surf-sess,v 1.28 2015/12/10 22:51:30 zkaufman Exp $';
+
+set inputargs = ($argv);
+
+set fsd        = bold;
+set instem     = ()
+set outstem    = ();
+set regfile    = ();
+set RegDOF     = 6;
+set trgsubject = fsaverage
+set hemilist = ()
+set ProjFrac = 0.5;
+set interp = trilin
+set PerRun = 1;
+set maskname = brain
+set maskdir = masks
+set maskstem = ();
+set RunListFile = ();
+set volsurffwhm = (); # smooth in the volume, for testing
+set fwhm = ();
+set UpdateOnly = 0;
+set nolog = 0;
+set debug = 0;
+set DoSelf = 0;
+set PrintHelp = 0;
+set SurfReg = sphere.reg
+set ExpKey = ();
+set ExpKeyNeeded = 0;
+set SliceOrder = ();
+set SliceDelayFile = ();
+set SaveUnsmoothed = 0;
+set UseB0DC = 0;
+set b0dcmapstem = b0dcmap
+set UseCortexLabel = 1;
+
+set outfmt = nii
+if($?FSF_OUTPUT_FORMAT) then
+  set outfmt = $FSF_OUTPUT_FORMAT
+endif
+
+## If there are no options, just print the usage ##
+if($#argv == 0) goto usage_exit;
+set n = `echo $argv | grep -e  -version | wc -l` 
+if($n != 0) then
+  echo $VERSION
+  exit 0;
+endif
+set n = `echo $argv | grep -e -help | wc -l` 
+if($n != 0) then
+  set PrintHelp = 1;  
+  goto usage_exit;
+endif
+
+source $FREESURFER_HOME/sources.csh
+
+goto parse_args;
+parse_args_return:
+
+set SessList = `getsesspath $inputargs`;
+if($status || $#SessList == 0) then
+  getsesspath $inputargs 
+  echo "ERROR: cannot find any sessions"
+  exit 1;
+endif
+
+goto check_params;
+check_params_return:
+
+# Create a string like lhrh
+set hemistr = ();
+foreach hemi ($hemilist)
+  set hemistr = $hemistr$hemi
+end
+
+set ProjectDir = `pwd`;
+
+## Loop through each session ##
+@ nthsess = 0;
+foreach sess ($SessList)
+  set sessid = `basename $sess`
+  @ nthsess = $nthsess + 1;
+
+  ##### Create a log file ######
+  set LF = /dev/null
+  if(! $nolog) then
+    set logdir = $ProjectDir/log;
+    mkdir -p $logdir
+    set LF = $logdir/rawfunc2surf-sess.$sessid.$fsd.$outstem.$hemistr$ExpKey.log
+    if(-e $LF) mv $LF $LF.old
+  endif
+  echo "rawfunc2surf-sess log file" >> $LF
+  echo $VERSION >> $LF
+  uname -a >> $LF
+  date >> $LF
+  pwd >> $LF
+  echo $0 $inputargs  >> $LF 
+  echo UpdateOnly $UpdateOnly >> $LF 
+
+  echo "------------------------------ " |& tee -a $LF
+  echo "$nthsess/$#SessList $sessid" |& tee -a $LF
+
+  set subject = `cat $sess/subjectname`;
+  if($DoSelf) set trgsubject = $subject
+
+  set b0dcmap = ();
+  if($UseB0DC) then
+    set b0dcmap = `stem2fname $sess/$fsd/$b0dcmapstem`;
+    if($status) then
+      echo "$b0dcmap"|& tee -a $LF
+      exit 1;
+    endif
+  endif
+
+  set RunList = `getrunlist $sess/$fsd $RunListFile`;
+  if($status) then
+    echo "$RunList" |& tee -a $LF
+    exit 1;
+  endif
+
+  # Handle masks first
+  foreach hemi ($hemilist)
+    if(! $PerRun) then
+      # Per-session
+      set reg = $sess/$fsd/$regfile
+      if(! -e $reg) then
+        echo "ERROR: cannot find $reg" | tee -a $LF
+        echo "Try running register-sess" | tee -a $LF
+        exit 1;
+      endif
+      set maskstempath = $sess/$fsd/$maskdir/$maskname
+      set mask = `stem2fname $maskstempath`
+      if($status) then
+        echo "$mask" | tee -a $LF
+        echo "Try running mkbrainmask-sess" | tee -a $LF
+        exit 1;
+      endif
+      set outmask = $sess/$fsd/$maskdir/$maskstem.$hemi$ExpKey.$outfmt
+      set UpdateNeeded = `UpdateNeeded $outmask $reg $mask $b0dcmap`;
+      if(! $UpdateOnly) set UpdateNeeded = 1;    
+      if($UpdateNeeded) then
+        set cmd = (mri_vol2surf --mov $mask --reg $reg \
+          --trgsubject $trgsubject --interp nearest --projfrac $ProjFrac\
+          --hemi $hemi --o $outmask --noreshape)
+        if($UseCortexLabel) set cmd = ($cmd --cortex)
+        if($trgsubject != $subject) set cmd = ($cmd --surfreg $SurfReg)
+        if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+        set cmd = (mri_binarize --i $outmask --min .00001 --o $outmask)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+      else
+        echo "$outmask does not need updating" | tee -a $LF
+      endif
+      continue;
+    endif
+
+    # Must be per-run to get here
+    foreach Run ($RunList)
+      echo "  $nthsess/$#SessList $sessid $Run $hemi ---------" |& tee -a $LF
+      echo "    `date`"  |& tee -a $LF
+      set funcdir = $sess/$fsd/$Run
+
+      set reg = $sess/$fsd/$Run/$regfile
+      if(! -e $reg) then
+        echo "ERROR: cannot find $reg" | tee -a $LF
+        echo "Try running register-sess with -per-run" | tee -a $LF
+        exit 1;
+      endif
+      # Use only one mask for all runs so no pruning necessary
+      #set maskstempath = $sess/$fsd/$maskdir/$maskname
+      # This creates problems when there is motion or
+      # or removed and replace subject in scanner
+      # So go back to using run-based mask
+      set maskstempath = $sess/$fsd/$Run/$maskdir/$maskname
+      set mask = `stem2fname $maskstempath`
+      if($status) then
+        echo "$mask" | tee -a $LF
+        echo "Try running mkbrainmask-sess with -per-run" | tee -a $LF
+        exit 1;
+      endif
+
+      # Create a .pr mask here, then merge them together into a single mask later
+      set outmask = $sess/$fsd/$Run/$maskdir/$maskstem.$hemi$ExpKey.pr.$outfmt
+      set UpdateNeeded = `UpdateNeeded $outmask $reg $mask $b0dcmap`;
+      if(! $UpdateOnly) set UpdateNeeded = 1;    
+      if($UpdateNeeded) then
+        set cmd = (mri_vol2surf --mov $mask --reg $reg \
+          --trgsubject $trgsubject --interp nearest --projfrac $ProjFrac\
+          --hemi $hemi --o $outmask --noreshape)
+        if($UseCortexLabel) set cmd = ($cmd --cortex)
+        if($trgsubject != $subject) set cmd = ($cmd --surfreg $SurfReg)
+        if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+        set cmd = (mri_binarize --i $outmask --min .00001 --o $outmask)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+      else
+        echo "$outmask does not need updating" | tee -a $LF
+      endif
+    end # loop over runs
+
+    # Merge run-level masks and prune
+    set prmasklist = ()
+    foreach Run ($RunList)
+      set prmask = $sess/$fsd/$Run/$maskdir/$maskstem.$hemi$ExpKey.pr.$outfmt
+      set prmasklist = ($prmasklist $prmask)
+    end
+    set finalmask = $sess/$fsd/$maskdir/$maskstem.$hemi$ExpKey.pr.$outfmt
+    set UpdateNeeded = `UpdateNeeded $finalmask $prmasklist`;
+    if(! $UpdateOnly) set UpdateNeeded = 1;    
+    if($UpdateNeeded) then
+      set cmd = (mri_concat --o $finalmask --mean $prmasklist)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;      
+      set cmd = (mri_binarize --i $finalmask --min 10e-10 --o $finalmask)
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;      
+      # Now copy it to each run, remove the .pr
+      foreach Run ($RunList)
+        set prmask = $sess/$fsd/$Run/$maskdir/$maskstem.$hemi$ExpKey.$outfmt
+        cp $finalmask $prmask |& tee -a $LF
+        if($status) exit 1;      
+      end
+    else
+      echo "$finalmask does not need updating" | tee -a $LF
+    endif
+  end # loop over hemi
+
+  # Now do time series data
+  foreach hemi ($hemilist)
+    foreach Run ($RunList)
+      echo "  $nthsess/$#SessList $sessid $Run $hemi ---------" |& tee -a $LF
+      echo "    `date`"  |& tee -a $LF
+      set funcdir = $sess/$fsd/$Run
+      set invol = `stem2fname $funcdir/$instem`
+      if($status) then
+        echo "$invol" |& tee -a $LF
+        exit 1;
+      endif
+
+      # Get the mask and reg to use
+      if($PerRun) then
+        set outmask = $sess/$fsd/$Run/$maskdir/$maskstem.$hemi$ExpKey.$outfmt
+        set reg = $sess/$fsd/$Run/$regfile
+      else
+        set outmask = $sess/$fsd/$maskdir/$maskstem.$hemi$ExpKey.$outfmt
+        set reg = $sess/$fsd/$regfile
+      endif
+
+      set outvol = $funcdir/$outstem.$hemi$ExpKey.$outfmt
+      set UpdateNeeded = `UpdateNeeded $outvol $invol $reg $outmask`;
+      if(! $UpdateOnly) set UpdateNeeded = 1;
+      if($UpdateNeeded == 0) then
+        echo "    $sessid $Run Update not needed" | tee -a $LF
+        continue
+      endif
+
+      set cmd = (mri_vol2surf --mov $invol --reg $reg \
+        --trgsubject $trgsubject --interp $interp --projfrac $ProjFrac\
+        --hemi $hemi --o $outvol --noreshape)
+      if($UseCortexLabel) set cmd = ($cmd --cortex)
+      if($trgsubject != $subject) set cmd = ($cmd --surfreg $SurfReg)
+      if($UseB0DC) set cmd = ($cmd --vsm $b0dcmap)
+      if($#volsurffwhm) set cmd = ($cmd --fwhm $volsurffwhm) # dont do for mask
+      echo $cmd | tee -a $LF
+      $cmd | tee -a $LF
+      if($status) exit 1;
+
+      # Smooth raw data within mask
+      if($fwhm != 0) then
+        if($SaveUnsmoothed) cp $outvol $funcdir/$outstem0.$hemi$ExpKey.$outfmt
+        set cmd = (mris_fwhm --s $trgsubject --hemi $hemi --smooth-only \
+          --i $outvol --fwhm $fwhm --o $outvol --mask $outmask --no-detrend)
+        echo $cmd | tee -a $LF
+        $cmd | tee -a $LF
+        if($status) exit 1;
+      endif
+    end  # Loop over runs
+  end # Loop over hemis
+
+end  # foreach sess ($SessList)
+
+echo "" |& tee -a $LF
+date |& tee -a $LF
+echo "rawfunc2surf-sess completed " |& tee -a $LF
+
+exit 0;
+
+############--------------##################
+parse_args:
+set cmdline = "$argv";
+while( $#argv != 0 )
+
+  set flag = $argv[1]; shift;
+  
+  switch($flag)
+
+    case "-i":
+    case "-instem":
+      if ( $#argv == 0) goto arg1err;
+      set instem = $argv[1]; shift;
+      breaksw
+
+    case "-fsd":
+      if ( $#argv == 0) goto arg1err;
+      set fsd = $argv[1]; shift;
+      breaksw
+
+    case "-runlistfile":
+    case "-rlf":
+      if ( $#argv == 0) goto arg1err;
+      set RunListFile = $argv[1]; shift;
+      breaksw
+
+    case "-per-run":
+    case "-perrun":
+      set PerRun = 1;
+      breaksw
+
+    case "-per-session":
+    case "-no-per-run":
+    case "-no-perrun":
+      set PerRun = 0;
+      #set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-surfreg":
+      if ( $#argv == 0) goto arg1err;
+      set SurfReg = $argv[1]; shift;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-expkey":
+      if($#argv < 1) goto arg1err;
+      set ExpKey = $argv[1]; shift;
+      set ExpKey = (.$ExpKey); # prepend a dot
+      breaksw
+
+    case "-update":
+      set UpdateOnly = 1;
+      breaksw
+
+    case "-force":
+      set UpdateOnly = 0;
+      breaksw
+
+    case "-nearest":
+      set interp = "nearest"e
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-trilin":
+      set interp = "trilin"
+      breaksw
+
+    case "-trgsubject":
+      if($#argv < 1) goto arg1err;
+      set trgsubject = $argv[1]; shift;
+      breaksw
+
+    case "-stc":
+    case "-sliceorder":
+    case "-so":
+      if ( $#argv == 0) goto arg1err;
+      set SliceOrder = $argv[1]; shift;
+      if($SliceOrder != siemens && $SliceOrder != up && $SliceOrder != down && \
+         $SliceOrder != odd && $SliceOrder != even && $SliceOrder != none) then
+         echo "ERROR: -stc is $SliceOrder, must be siemens, up, down, odd, even, or none"
+         exit 1;
+      endif
+      breaksw
+
+    case "-sdf":
+      if ( $#argv == 0) goto arg1err;
+      set SliceDelayFile = $argv[1]; shift;
+      set DoSTC = 1;
+      breaksw
+
+    case "-reg":
+      if($#argv < 1) goto arg1err;
+      set regfile = $argv[1]; shift;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-b0dc":
+    case "-b0dcor":
+    case "-vsm":
+      set UseB0DC = 1;
+      set ExpKey = ".b0dc"
+      breaksw
+
+    case "-projfrac":
+      if($#argv < 1) goto arg1err;
+      set ProjFrac = $argv[1]; shift;
+      set ExpKeyNeeded = 1;
+      breaksw
+
+    case "-fwhm":
+      if($#argv < 1) goto arg1err;
+      set fwhm = $argv[1]; shift;
+      breaksw
+
+    case "-volsurffwhm":
+      if($#argv < 1) goto arg1err;
+      set volsurffwhm = $argv[1]; shift;
+      breaksw
+
+    case "-hemi":
+      if($#argv < 1) goto arg1err;
+      set hemi = $argv[1]; shift;
+      set hemilist = ($hemilist $hemi);
+      breaksw
+
+    case "-lh":
+      set hemilist = ($hemilist lh);
+      breaksw
+
+    case "-rh":
+      set hemilist = ($hemilist rh);
+      breaksw
+
+    case "-self":
+      set DoSelf = 1;
+      breaksw
+
+    # should not use either of these
+    case "-o":
+    case "-outstem":
+      if ( $#argv == 0) goto arg1err;
+      set outstem = $argv[1]; shift;
+      breaksw
+
+    case "-mask":
+      # output mask stem
+      if ( $#argv == 0) goto arg1err;
+      set maskstem = $argv[1]; shift;
+      breaksw
+
+    case "-save-unsmoothed":
+      set SaveUnsmoothed = 1;
+      breaksw
+
+    case "-no-cortex-label":
+      set UseCortexLabel = 0;
+      breaksw
+      
+    case "-cortex-label":
+      set UseCortexLabel = 1;
+      breaksw
+
+    case "-nolog":
+      set nolog = 1;
+      breaksw
+
+    case "-debug":
+      set debug = 1;
+      set verbose = 1;
+      set echo = 1;
+      breaksw
+
+    case "-cwd":
+      breaksw
+
+    case "-s":
+    case "-sf":
+    case "-df":
+    case "-d":
+    case "-g":
+      shift;
+      breaksw
+
+    default:
+      echo ERROR: Flag $flag unrecognized. 
+      echo $cmdline
+      exit 1
+      breaksw
+  endsw
+
+end
+
+goto parse_args_return;
+############--------------##################
+
+############--------------##################
+check_params:
+
+if($#fwhm == 0) then
+  echo "ERROR: you must enter a FWHM. Use 0 for no smoothing."
+  exit 1;
+endif
+if($ExpKeyNeeded && $#ExpKey == 0) then
+  echo "ERROR: experts key needed (-expkey)"
+  exit 1;
+endif
+
+if($#instem == 0) then
+  if($PerRun)   set instem = fmcpr
+  if(! $PerRun) set instem = fmc
+  if($#SliceOrder != 0) set instem = $instem.$SliceOrder
+  if($#SliceDelayFile != 0) set instem = $instem.sdf
+endif
+
+if($DoSelf) then
+  set subjstr = self
+else
+  set subjstr = $trgsubject
+endif
+
+if($#outstem == 0) set outstem = $instem
+set outstem0 = $outstem.sm0.$subjstr; # for saving unsmoothed
+if($#volsurffwhm == 0) then
+  set outstem  = $outstem.sm$fwhm.$subjstr; # hemi appended later
+else
+  set outstem  = $outstem.vsm$volsurffwhm.sm$fwhm.$subjstr; # hemi appended later
+endif
+
+if($#maskstem == 0) set maskstem = $maskname
+set maskstem = $maskstem.$subjstr # hemi appended later
+
+if($#hemilist == 0) set hemilist = (lh rh);
+echo "instem $instem"
+echo "outstem $outstem.hemi"
+
+if($#regfile == 0) then
+  if(! $UseB0DC) set regfile = register.dof$RegDOF.lta
+  if($UseB0DC)   set regfile = register.dof$RegDOF.b0dc.lta
+endif
+
+goto check_params_return;
+############--------------##################
+
+############--------------##################
+arg1err:
+  echo "ERROR: flag $flag requires one argument"
+  exit 1
+############--------------##################
+
+############--------------##################
+usage_exit:
+  echo "rawfunc2surf-sess"
+  echo ""
+  echo " Session Arguments (some required)"
+  echo "  -sf sessidfile  ..."
+  echo "  -df srchdirfile ..."
+  echo "  -s  sessid      ..."
+  echo "  -d  srchdir     ..."
+  echo ""
+  echo "  -fwhm FWHMmm : smooth by FWHM mm (enter 0 for no smoothing)"
+  echo ""
+  echo "Optional Arguments"
+  echo "  -i instem    :  fmcpr (default is fmcpr)"
+  echo "  -fsd dir     : functional subdirectory ($fsd)"
+  echo "  -self : map to native subject surface instead of fsaverage"
+  echo ""
+  echo "Expert Options"
+  echo "  -reg regfile : default is register.dof$RegDOF.lta"
+  echo "  -nearest     : use nearest neighbor interp (default is trilin)"
+  echo "  -surfreg SurfReg : change from $SurfReg"
+  echo "  -per-session : use session-level registration and mask instead of -per-run"
+  echo "  -no-cortex-label : do not use cortex label for masking"
+  echo ""
+  echo "Other options"
+  echo "  -save-unsmoothed : save sm0 in addition to smoothed data"
+  echo "  -update : only run if update is needed"
+  echo "  -force : force an update (default)"
+  echo "  -version       : print version and exit"
+  echo "  -debug"
+  echo ""
+  if(! $PrintHelp ) exit 1;
+
+  echo " "
+  echo "$VERSION "
+  echo " "
+
+  cat $0 | awk 'BEGIN{prt=0}{if(prt) print $0; if($1 == "BEGINHELP") prt = 1 }'
+exit 1;
+
+#---- Everything below here is printed out as part of help -----#
+BEGINHELP
+
+Resamples raw functional data onto the cortical surface.
+
+

@@ -1,0 +1,169 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_em_register</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_em_register [options] &lt;in brain volume&gt; &lt;template gca&gt; &lt;output transform name&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program creates a tranform in lta format</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;in brain volume&gt;</td><td>input volume</td></tr>
+<tr>
+<td>&lt;template gca&gt;</td><td>template gca</td></tr>
+<tr>
+<td>&lt;output transform name&gt;</td><td>output transform</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-dist distance</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nomap</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-flash</td><td>use FLASH forward model to predict intensity values</td></tr>
+<tr>
+<td>-mask &lt;volname&gt;</td><td>use volname as a mask</td></tr>
+<tr>
+<td>-skull</td><td>align to atlas containing skull (uns=5)</td></tr>
+<tr>
+<td>-uns nbrspacing</td><td>align to atlas containing skull setting unknown_nbr_spacing = nbrspacing</td></tr>
+<tr>
+<td>-diag diagfile</td><td>open diagfile for writing</td></tr>
+<tr>
+<td>-debug_voxel x y z</td><td>debug voxel (x, y, z)</td></tr>
+<tr>
+<td>-debug_label label</td><td>debug label (label)</td></tr>
+<tr>
+<td>-tr TR</td><td>use TR msec</td></tr>
+<tr>
+<td>-te TE</td><td>use TE msec</td></tr>
+<tr>
+<td>-alpha alpha</td><td>use alpha degrees</td></tr>
+<tr>
+<td>-example T1 seg</td><td>use T1 and seg as example T1 and segmentations respectively</td></tr>
+<tr>
+<td>-samples fname</td><td>write control points to fname</td></tr>
+<tr>
+<td>-fsamples fname</td><td>write transformed control points to fname</td></tr>
+<tr>
+<td>-nsamples fname</td><td>write transformed normalization control points to fname</td></tr>
+<tr>
+<td>-contrast</td><td>use contrast to find labels</td></tr>
+<tr>
+<td>-flash_parms parameterfile</td><td>use FLASH forward model and tissue parms in parameterfile to predict intensity values</td></tr>
+<tr>
+<td>-transonly</td><td>only compute translation parameters</td></tr>
+<tr>
+<td>-write_mean fname</td><td>write gca means to fname</td></tr>
+<tr>
+<td>-prior min_prior</td><td>use prior threshold min_prior</td></tr>
+<tr>
+<td>-spacing &lt;int&gt;</td><td>use max GCA spacing</td></tr>
+<tr>
+<td>-scales &lt;int&gt;</td><td>find optimal linear transform over int scales</td></tr>
+<tr>
+<td>-novar</td><td>do not use variance estimates</td></tr>
+<tr>
+<td>-dt dt</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-tol tol</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-center</td><td>use GCA centroid as origin of transform</td></tr>
+<tr>
+<td>-noscale</td><td>disable scaling</td></tr>
+<tr>
+<td>-noiscale</td><td>disable intensity scaling</td></tr>
+<tr>
+<td>-num num_xforms</td><td>find a total of num_xforms linear transforms</td></tr>
+<tr>
+<td>-area area</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nlarea nlarea</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-levels levels</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-intensity intensity</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-reduce nreductions</td><td>reduce input images nreductions times before aligning</td></tr>
+<tr>
+<td>-nsamples nsamples</td><td>using n samples of GCA</td></tr>
+<tr>
+<td>-norm fname</td><td>normalize intensity and write to fname</td></tr>
+<tr>
+<td>-trans max_trans</td><td>setting max translation search range to be max_trans</td></tr>
+<tr>
+<td>-steps max_angles</td><td>taking max_angles angular steps</td></tr>
+<tr>
+<td>-l xform long_reg</td><td>Longitudinal: read previously computed atlas xform and apply registration long_reg</td></tr>
+<tr>
+<td>-f cpfile</td><td>read manually defined control points from cpfile</td></tr>
+<tr>
+<td>-d tx ty tz</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-r rx ry rz</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-t xform</td><td>using previously computed transform xform</td></tr>
+<tr>
+<td>-b blur_sigma</td><td>blurring input image with sigma=blur_sigma</td></tr>
+<tr>
+<td>-v diagno</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-s max_angles</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-max_angle max_angle</td><td>max_angle for rotational search in radians (def=15 deg)</td></tr>
+<tr>
+<td>-n niters</td><td>niterations = niters</td></tr>
+<tr>
+<td>-w write_iters</td><td>write iterations = write_iters</td></tr>
+<tr>
+<td>-p ctl_point_pct</td><td>use top pct percent wm points as control points</td></tr>
+<tr>
+<td>-m momentum</td><td>set momentum</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>tranform</td><td>transform in lta format</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_em_register -mask subject1/mri/brain subject1/mri/nu single_one.gca subject1/mri/transforms/talairach_one.lta</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

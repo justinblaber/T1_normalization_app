@@ -1,0 +1,43 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_edit_wm_with_aseg</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_edit_wm_with_aseg &lt;options&gt; input-wm input-T1/brain aseg output-wm</p>
+
+<h1>DESCRIPTION</h1>
+<p>*****************************************</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<h3>*********************************************</h3>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>******************************************</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-fillven</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-keep</td><td>keep edits as found in output volume</td></tr>
+<tr>
+<td>-keep-in</td><td>keep edits as found in input volume</td></tr>
+<tr>
+<td>-debug_voxel Gx Gy Gz</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_edit_wm_with_aseg -keep-in wm.seg.mgz brain.mgz aseg.mgz wm.asegedit.mgz</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

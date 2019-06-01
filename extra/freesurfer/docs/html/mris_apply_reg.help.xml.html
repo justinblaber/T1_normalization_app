@@ -1,0 +1,54 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_apply_reg</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_apply_reg</p>
+
+<h1>DESCRIPTION</h1>
+<p> mris_apply_reg applys surface registration.<br /></p>
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--src srcvalfile</td><td> Input file that supplies the source values to convert</td></tr>
+<tr>
+<td>--trg trgvalfile</td><td> Output file</td></tr>
+<tr>
+<td>--streg srcreg1 trgreg1</td><td> source-target registration pair</td></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--streg srcreg2 trgreg2</td><td> source-target registration pair</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p><br />Map the lh thickness into the symmetric space<br />mris_apply_reg --src lh.thickness --trg xhemi.lh.thickness \<br />   --streg $SUBJECTS_DIR/$subject/surf/lh.fsaverage_sym.sphere.reg \<br />              $SUBJECTS_DIR/fsaverage_sym/surf/lh.sphere.reg<br />  </p>
+
+<h1>EXAMPLE 2</h1>
+<p><br /><br />Map the rh thickness into the symmetric space<br />mris_apply_reg --src rh.thickness --trg xhemi.rh.thickness \<br />   --streg $SUBJECTS_DIR/$subject/xhemi/surf/lh.fsaverage_sym.sphere.reg \<br />              $SUBJECTS_DIR/fsaverage_sym/surf/lh.sphere.reg<br /><br />Note that lh.fsaverage_sym.sphere.reg is used.  This is intentional; the left hemis in the xhemi folder are actually right hemis.<br /><br />  </p>
+
+<h1>EXAMPLE 3</h1>
+<p><br />    Map a label from the left hemi to the right hemi<br />    mris_apply_reg --src-label lh.source.label \<br />     --streg lh.sphere.left_right rh.sphere.left_right \<br />     --trg rh.lh.source.label<br />  </p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mris_convert</p></html>
+</body>

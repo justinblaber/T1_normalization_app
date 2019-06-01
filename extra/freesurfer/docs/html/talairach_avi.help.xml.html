@@ -1,0 +1,50 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>talairach_avi</p>
+
+<h1>SYNOPSIS</h1>
+<p>******************************************************************</p>
+
+<h1>DESCRIPTION</h1>
+<p>Front-end for Avi Snyders image registration tool. Computes the talairach transform that maps the input volume to the MNI average_305. This does not add the xfm to the header of the input file. When called by recon-all, the xfm is added to the header after the transform is computed.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<h3>*******************************************************************</h3>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--i invol</td><td>input volume</td></tr>
+<tr>
+<td>--xfm outxfm</td><td>output xfm file</td></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--atlas</td><td>alternate target atlas (in freesurfer/average dir)</td></tr>
+<tr>
+<td>--log</td><td>log file. default is outdir/talairach_avi.log</td></tr>
+<tr>
+<td>--help</td><td>print help and exit</td></tr>
+<tr>
+<td>--debug</td><td>turn on debugging</td></tr>
+<tr>
+<td>--version</td><td>print version and exit</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mri_add_xform_to_header</p></html>
+</body>

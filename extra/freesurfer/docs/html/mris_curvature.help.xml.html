@@ -1,0 +1,61 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_curvature</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_curvature [&lt;options&gt;] insurf</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program will compute the second fundamental form of a cortical surface. It will create two new files &lt;hemi&gt;.&lt;surface&gt;.H and &lt;hemi&gt;.&lt;surface&gt;.K with the mean and Gaussian curvature respectively.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;insurf&gt;</td><td>input surface file</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None.</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-w</td><td>save curvature files (will only generate screen output without this option)</td></tr>
+<tr>
+<td>-max</td><td>save  1st (max) principal curvature in ?h.&lt;surface&gt;.max file</td></tr>
+<tr>
+<td>-min</td><td>save  2nd (min) principal curvature in ?h.&lt;surface&gt;.min file</td></tr>
+<tr>
+<td>-a &lt;avgs&gt;</td><td>perform &lt;avgs&gt; iterative averages of curvature measure before saving</td></tr>
+<tr>
+<td>-nbrs &lt;nbrs&gt;</td><td>set neighborhood size to nbrs </td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>insurf.h</td><td>mean curvature file</td></tr>
+<tr>
+<td>insurf.K</td><td>gaussian curvature file</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mris_curvature lh.pial<br />Compute the curvature and do not produce output files. </p>
+
+<h1>EXAMPLE 2</h1>
+<p>mris_curvature -w -a 10 lh.pial<br />Smooth 10 iterations and produce output files.</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

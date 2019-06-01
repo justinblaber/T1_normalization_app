@@ -1,0 +1,71 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH MINCPIK 1 "$Date: 2005/07/15 20:14:43 $" "" "MINC User's Guide"
+
+.SH NAME
+mincpik \- generate images from minc files
+
+.SH SYNOPSIS
+.B mincpik
+[options] <infile>.mnc [<image.type>]
+
+.SH DESCRIPTION
+.I mincpik
+generates image files from MINC volumes using the Imagemagick
+convert utility. For a complete list of output file types see the
+convert man pages.
+
+.SH General options
+.TP
+\fB\-verbose\fR
+print out extra information
+.TP
+\fB\-slice\fR
+slice number to get (note this is in voxel co-ordinates)
+.TP
+\fB\-scale\fR
+scaling factor for resulting image, by default images are output 
+at twice their original resolution
+
+.SH Image range and lookup table options
+.TP
+\fB\-range\fR\ \fImin max\fR
+valid range of values to use from MINC file
+.TP
+\fB\-image_range\fR\ \fImin max\fR
+range of image values to use for pixel intensity
+.TP
+\fB\-auto_range\fR
+automatically determine image range using a 5 and 95% PcT. (histogram)
+.TP
+\fB\-lookup\fR\ \fIarguments\fR
+arguments to pass to minclookup
+
+.SH Slicing options
+.TP
+\fB\-transverse\fR
+get a transverse slice
+.TP
+\fB\-axial\fR
+synonym for transverse
+.TP
+\fB\-coronal\fR
+get a coronal slice
+.TP
+\fB\-sagittal\fR
+get a sagital slice
+.TP
+\fB\-allthree\fR
+get all three dimensions
+
+.SH Generic options for all commands:
+.TP
+\fB\-help\fR
+Print summary of command-line options and abort.
+
+.SH AUTHOR
+Andrew Janke - <a.janke@gmail.com>
+
+.SH "SEE ALSO"
+.IR minclookup (1),
+.IR convert (1),
+.IR display (1).

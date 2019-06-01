@@ -1,0 +1,55 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_inflate - inflate cortical surface</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_inflate [&lt;options&gt;] insurfacefile outsurfacefile</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program will inflate a cortical surface.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>insurfacefile</td><td>input surface file</td></tr>
+<tr>
+<td>outsurfacefile</td><td>output surface file </td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-n &lt;# of iterations&gt;</td><td>set the maximum # of iterations (default = 10)</td></tr>
+<tr>
+<td>-w &lt;# of iterations&gt;</td><td>write out a snapshot of the inflation every #th time step.</td></tr>
+<tr>
+<td>-dist &lt;distance coefficient&gt;</td><td>specify the relative strength of the metric preserving term in the cost functional versus the smoothing term (default = 0.100000).</td></tr>
+<tr>
+<td>-no-save-sulc</td><td>do not save ?h.sulc</td></tr>
+<tr>
+<td>-sulc sulcname</td><td>save to ?h.sulcname</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>outsurfacefile</td><td>output surface file</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

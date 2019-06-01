@@ -1,0 +1,48 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_pretess</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_pretess [options] filledvol labelstring normvol newfilledvol</p>
+
+<h1>DESCRIPTION</h1>
+<p>Changes white matter (WM) segmentation so that the neighbors of all voxels labeled as WM have a face in common - no edges or corners allowed.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>filledvol</td><td>usually wm.mgz</td></tr>
+<tr>
+<td>labelstring</td><td>usually wm</td></tr>
+<tr>
+<td>normvol</td><td>usually norm.mgz</td></tr>
+<tr>
+<td>newfilledvol</td><td>usually wm.mgz</td></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-debug_voxel C R S</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nocorners</td><td>no removal of corner configurations in addition to edge ones</td></tr>
+<tr>
+<td>-w</td><td>turn on diagnostic writing</td></tr>
+<tr>
+<td>-keep</td><td>keep WM edits</td></tr>
+<tr>
+<td>-test</td><td>adds a voxel that should be removed by mri_pretess. The value of the voxel is set to that of an ON-edited WM, so it should be kept with -keep. The output will NOT be saved.</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

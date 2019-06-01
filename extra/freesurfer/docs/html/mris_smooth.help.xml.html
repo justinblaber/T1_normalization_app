@@ -1,0 +1,57 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_smooth</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_smooth [options] &lt;input surface&gt; &lt;output surface&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program smooths the tessellation of a cortical surface and write out the first and second order properties after smoothing to the files $hemi.curv (mean curvature) and $hemi.area (area).</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>input surface</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>output surface</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-a &lt;avgs&gt;</td><td>specify # of curvature averaging iterations (def=10).</td></tr>
+<tr>
+<td>-n &lt;niter&gt;</td><td>specify # of smoothing iterations (def=10).</td></tr>
+<tr>
+<td>-nw</td><td>disable writing of curvature and area estimates</td></tr>
+<tr>
+<td>-c curvname</td><td>write curv to ?h.curvname (default 'curv')</td></tr>
+<tr>
+<td>-b areaname</td><td>write area to ?h.areaname (default 'area')</td></tr>
+<tr>
+<td>-g &lt;norm&gt; &lt;steps&gt;</td><td>use Gaussian curvature smoothing with norm &lt;norm&gt; and &lt;steps&gt; smoothing steps(-g 20 8 works well for hippo)</td></tr>
+<tr>
+<td>-area</td><td>normalize area after smoothing</td></tr>
+<tr>
+<td>-m momentum</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-w nwrite</td><td>write snapshot every nwrite iterations</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

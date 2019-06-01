@@ -1,0 +1,9 @@
+# FSAFD TalairachingCheckMean 1
+# date 20050512
+# $Id: TalairachingMean.adf,v 1.1 2005/05/27 16:24:08 wastiaux Exp $
+# Buckner data set
+# nsubjects 591
+# ncols 9
+# nrows 1
+# Average talairach.xfm coefficients (translation excluded)  
+   1.1393078e+00   1.4347009e-02  -5.6109428e-02   1.3869485e-02   1.1022074e+00   1.9531057e-01  -7.0538470e-03  -1.7719991e-01   1.2181642e+00

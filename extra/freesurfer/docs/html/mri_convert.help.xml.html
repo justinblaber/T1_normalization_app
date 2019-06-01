@@ -1,0 +1,381 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_convert</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_convert [options] &lt;in volume&gt; &lt;out volume&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p> mri_convert is a general purpose utility for converting between different file formats. The file type can be specified in two ways. First, mri_convert will try to figure it out on its own from the format of the file name (eg, files that end in .img are assumed to be in spm analyze format). Second, the user can explicity set the type of file using --in_type and/or --out_type.<br /><br />Legal values for --in_tye (-it) and --out_type (-ot) are listed under optional flagged arguments.<br /><br />A note on specifying orientation:<br /><br />Do not use this to try to change the orientation for FSL. This is only to be used when the orientation information in the input file is *wrong*. If it is correct, this will make it wrong! If you are having problems with fslview displaying your data, consult the FSL website for methods to reorient.<br /><br />Ideally, the orientation information is derived from a DICOM file so that you have some confidence that it is correct. It is generally pretty easyto determine which direction Anterior/Posterior or Inferior/Superior are. Left/Right is very difficult. However, if you have some way of knowing which direction is which, you can use these options to incorporate this information into the header of the output format. For analyze files, it will be stored in the output.mat file. For NIFTI, it is stored as the qform matrix. For bshort/bfloat, it is stored in the .bhdr file. For mgh/mgz it is internal.<br />First of all, determining and setting the orientation is hard. Don't fool yourself into thinking otherwise. Second, don't think you are going to learn all you need to know from this documentation. Finally, you risk incorporating a left-right flip in your data if you do it incorrectly. OK, there are two ways to specify this information on the command-line.<br />(1) explicitly specify the direction cosines with -iid, -ijd, -ikd. If you don't know what a direction cosine is, don't use this method.<br />(2) specify an orientation string with --in_orientation  ostring and --out_orientation ostring<br />Supply the orientation information in the form of an orientation string  (ostring). The ostring is three letters that roughly describe how the volume  is oriented. This is usually described by the direction cosine information  as originally derived from the dicom but might not be available in all data  sets. You'll have to determine the correct ostring for your data.  The first  character of ostring determines the direction of increasing column.  The second character of ostring determines the direction of increasing row.  The third  character of ostring determines the direction of increasing slice.  Eg, if the volume is axial starting inferior and going superior the slice is oriented such that nose is pointing up and the right side of the subject is on the left side of the image, then this would correspond to LPS, ie,  as the column increases, you move to the patients left; as the row increases, you move posteriorly, and as the slice increases, you move superiorly. Valid letters are L, R, P, A, I, and S. There are 48 valid combinations (eg, RAS LPI, SRI). Some invalid ones are DPS (D is not a valid letter), RRS (can't specify R twice), RAP (A and P refer to the same axis). Invalid combinations are detected immediately, an error printed, and the program exits. Case-insensitive. Note: you can use tkregister2 to help determine the correct orientation string.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>involume</td><td>in volume</td></tr>
+<tr>
+<td>outvolume</td><td>out volume</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-ro, --read_only</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nw, --no_write </td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ii, --in_info</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-oi, --out_info</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-is, --in_stats</td><td>print statistics on input volume</td></tr>
+<tr>
+<td>-os, --out_stats</td><td>print statistics on output volume</td></tr>
+<tr>
+<td>-im, --in_matrix</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-om, --out_matrix</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--upsample N &lt;size&gt;</td><td>Reduce voxel size by a factor of N in all dimensions</td></tr>
+<tr>
+<td>-iis, --in_i_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ijs, --in_j_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-iks, --in_k_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--force_ras_good </td><td>use default when orientation info absent</td></tr>
+<tr>
+<td>-iid, --in_i_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ijd, --in_j_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ikd, --in_k_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--in_orientation orientation-string</td><td>see SPECIFYING THE ORIENTATION</td></tr>
+<tr>
+<td>-ic, --in_center &lt;R coordinate&gt; &lt;A coordinate&gt; &lt;S coordinate&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-dic, --delta_in_center &lt;dR coordinate&gt; &lt;dA coordinate&gt; &lt;dS coordinate&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--sphinx</td><td>change orientation info to sphinx</td></tr>
+<tr>
+<td>-oni, -oic, --out_i_count &lt;count&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-onj, -ojc, --out_j_count &lt;count&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-onk, -okc, --out_k_count &lt;count&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-vs, --voxsize &lt;size_x&gt; &lt;size_y&gt; &lt;size_z&gt;</td><td>specify the size (mm) - useful for upsampling or downsampling</td></tr>
+<tr>
+<td>-ds, --downsample &lt;ds_x&gt; &lt;ds_y&gt; &lt;ds_z&gt;</td><td>specify the downsampling or upsampling factor</td></tr>
+<tr>
+<td>-ois, --out_i_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ojs, --out_j_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-oks, --out_k_size &lt;size&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-oid, --out_i_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ojd, --out_j_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-okd, --out_k_direction &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--out_orientation orientation-string</td><td>see SETTING ORIENTATION</td></tr>
+<tr>
+<td>-oc, --out_center &lt;R direction&gt; &lt;A direction&gt; &lt;S direction&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-odt, --out_data_type &lt;uchar|short|int|float&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--bfile-little-endian</td><td>write out bshort/bfloat files in little endian</td></tr>
+<tr>
+<td>--in_stats_table</td><td>input data is a stats table as produced<br />      by asegstats2table or aparcstats2table</td></tr>
+<tr>
+<td>--out_stats_table</td><td>output data is a stats table (use --like to pass template table for measure, columns and rows header)</td></tr>
+<tr>
+<td>-rt, --resample_type &lt;interpolate|weighted|nearest|cubic&gt;</td><td>default is interpolate</td></tr>
+<tr>
+<td>--no_scale flag &lt;-ns&gt;</td><td>1 = dont rescale values for COR</td></tr>
+<tr>
+<td>-nc --nochange</td><td>don't change type of input to that of template</td></tr>
+<tr>
+<td>-tr TR</td><td>TR in msec</td></tr>
+<tr>
+<td>-te TE</td><td>TE in msec</td></tr>
+<tr>
+<td>-TI TI</td><td>TI in msec (note upper case flag)</td></tr>
+<tr>
+<td>-flip_angle flip angle </td><td>angle in radians </td></tr>
+<tr>
+<td>--autoalign mtxfile </td><td>text file with autoalign matrix </td></tr>
+<tr>
+<td>-oval  val</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--outside_val  val</td><td>set the values outside of the image that may rotate in if a transform is applied to val </td></tr>
+</table>
+<h3>APPLYING TRANSFORMS (INCLUDING TALAIRACH) </h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--apply_transform xfmfile (-T or -at) </td><td>apply tranform given by xfm or m3z files </td></tr>
+<tr>
+<td>&nbsp;</td>
+<td>The volume can be resampled into another space by supplying a transform using the -apply_transform flag. This reads the transform file and applies the transform (when --apply_inverse_transform is used, the transform is inverted and then applied). An example of a transform file is talairach.xfm as found in subjectid/mri/transforms. To convert a subject's orig volume to talairach space, execute the following lines: <br />    cd subjectid/mri <br />    mkdir talairach <br />    mri_convert orig.mgz --apply_transform transforms/talariach.xfm <br />       -oc 0 0 0   orig.talairach.mgz <br /> <br />This properly accounts for the case where the input volume does not have it's coordinate center at 0. <br />To evaluate the result, run: <br />   tkmedit -f $SUBJECTS_DIR/talairach/mri/orig.mgz <br />      -aux orig.talairach.mgz <br /> <br />The main and aux volumes should overlap very closely. If they do not, use tkregister2 to fix it (run tkregister --help for docs).</td></tr>
+<tr>
+<td>--apply_inverse_transform xfmfile (-ait) </td><td>apply inverse of tranform given by xfm or m3z files </td></tr>
+<tr>
+<td>--devolvexfm subjectid</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--like name</td><td>output is embedded in a volume like name, or in stats-table like name (measure, columns, rows)</td></tr>
+<tr>
+<td>--crop &lt;x&gt; &lt;y&gt; &lt;z&gt; </td><td>crop to 256 around center (x,y,z) </td></tr>
+<tr>
+<td>--cropsize &lt;dx&gt; &lt;dy&gt; &lt;dz&gt;</td><td>crop to size &lt;dx, dy, dz&gt;</td></tr>
+<tr>
+<td>--cutends ncut </td><td>remove ncut slices from the ends</td></tr>
+<tr>
+<td>--slice-crop s_start s_end </td><td>keep slices s_start to s_end</td></tr>
+<tr>
+<td>--slice-reverse </td><td>reverse order of slices, update vox2ras</td></tr>
+<tr>
+<td>--nslices-override nslices </td><td>Use this number of slices when converting DICOM mosaics</td></tr>
+<tr>
+<td>--slice-bias alpha </td><td>apply half-cosine bias field</td></tr>
+<tr>
+<td>--fwhm fwhm </td><td>smooth input volume by fwhm mm</td></tr>
+</table>
+<h3>SPECIFYING THE INPUT AND OUTPUT FILE TYPES<br />Legal values for --in_type (-it) and --out_type (-ot) are: </h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>cor</td><td>MGH-NMR COR format (deprecated)</td></tr>
+<tr>
+<td>mgh</td><td>MGH-NMR format</td></tr>
+<tr>
+<td>mgz</td><td>MGH-NMR gzipped (compressed) mgh format</td></tr>
+<tr>
+<td>minc</td><td>MNI's Medical Imaging NetCDF format (output may not work)</td></tr>
+<tr>
+<td>analyze</td><td>3D analyze (same as spm)</td></tr>
+<tr>
+<td>analyze4d</td><td>4D analyze </td></tr>
+<tr>
+<td>spm</td><td>SPM Analyze format (same as analyze and analyze3d)</td></tr>
+<tr>
+<td>ge</td><td>GE Genesis format (input only)</td></tr>
+<tr>
+<td>gelx</td><td>GE LX (input only)</td></tr>
+<tr>
+<td>lx</td><td>same as gelx</td></tr>
+<tr>
+<td>ximg</td><td>GE XIMG variant (input only)</td></tr>
+<tr>
+<td>siemens</td><td>Siemens IMA (input only)</td></tr>
+<tr>
+<td>dicom</td><td>generic DICOM Format (input only)</td></tr>
+<tr>
+<td>siemens_dicom</td><td>Siemens DICOM Format (input only)</td></tr>
+<tr>
+<td>afni</td><td>AFNI format</td></tr>
+<tr>
+<td>brik</td><td>same as afni</td></tr>
+<tr>
+<td>bshort</td><td>MGH-NMR bshort format</td></tr>
+<tr>
+<td>bfloat</td><td>MGH-NMR bfloat format</td></tr>
+<tr>
+<td>sdt</td><td>Varian (?)</td></tr>
+<tr>
+<td>outline</td><td>MGH-NMR Outline format</td></tr>
+<tr>
+<td>otl</td><td>same as outline</td></tr>
+<tr>
+<td>gdf</td><td>GDF volume (requires image stem for output; use -gis)</td></tr>
+<tr>
+<td>nifti1</td><td>NIfTI-1 volume (separate image and header files)</td></tr>
+<tr>
+<td>nii</td><td>NIfTI-1 volume (single file)<br />if the input/output has extension .nii.gz, then compressed is used</td></tr>
+</table>
+<h3>CONVERTING TO SPM-ANALYZE FORMAT<br />Converting to SPM-Analyze format can be done in two ways, depending upon whether a single frame or multiple frames are desired. For a single frame, simply specify the output file name with a .img extension, and mri_convert will save the first frame into the file. For multiple frames, specify the base as the output file name and add --out_type spm. This will save each frame as baseXXX.img where XXX is the three-digit, zero-padded frame number. Frame numbers begin at one. By default, the width the of zero padding is 3. This can be controlled with --in_nspmzeropad N where N is the new width.</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--ascii</td><td>save output as ascii. This will be a data file with a single column of data. The fastest dimension will be col, then row,then slice, then frame.</td></tr>
+<tr>
+<td>--ascii+crsf</td><td>same as --ascii but includes col row slice and frame</td></tr>
+<tr>
+<td>-r, --reorder  olddim1 olddim2 olddim3</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-r4,--reorder4 olddim1 olddim2 olddim3 olddim4</td><td>Reorders axes such that olddim1 is the new column dimension,olddim2 is the new row dimension, olddim3 is the new slice, and olddim4 is the new frame dimension. <br />     Example: 2 1 3 will swap rows and cols. <br />  If using -r4, the output geometry will likely be wrong. It is best to re-run mri_convert and specify a correctly oriented volume through the --in_like option.  </td></tr>
+<tr>
+<td>--invert_contrast threshold</td><td>All voxels in volume greater than threshold are replaced with 255-value. Only makes sense for 8 bit images. Only operates on the first frame. </td></tr>
+<tr>
+<td>-i, --input_volume</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-o, --output_volume</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-c, --conform</td><td>conform to 1mm voxel size in coronal</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td>slice direction with 256^3 or more</td></tr>
+<tr>
+<td>-cm, --conform_min</td><td>conform to the src min direction size </td></tr>
+<tr>
+<td>-cs, --conform_size size_in_mm</td><td>conform to the size given in mm </td></tr>
+<tr>
+<td>-po, --parse_only</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-is, --in_stats</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-os, --out_stats</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-ro, --read_only</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nw, --no_write</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-sn, --subject_name</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-rl, --reslice_like</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-tt, --template_type &lt;type&gt; (see above)</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--split </td><td>split output frames into separate output files.</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td>Example: mri_convert a.nii b.nii --split will create b0000.nii b0001.nii b0002.nii ... </td></tr>
+<tr>
+<td>--erode-seg Nerodes</td><td>Erode segmentation boundaries Nerode times (based on 6 nearest neighbors)</td></tr>
+<tr>
+<td>--dil-seg Ndilations</td><td>Dilate segmentation boundaries Ndilate times (based on 6 nearest neighbors) to fill seg=0 voxels</td></tr>
+<tr>
+<td>--dil-seg-mask mask</td><td>Dilate segmentation boundaries to fill mask</td></tr>
+<tr>
+<td>-f,  --frame frameno [...]</td><td>keep only 0-based frame number(s)</td></tr>
+<tr>
+<td>--mid-frame</td><td>keep only the middle frame</td></tr>
+<tr>
+<td>--nskip n</td><td>skip the first n frames</td></tr>
+<tr>
+<td>--ndrop n</td><td>drop the last n frames</td></tr>
+<tr>
+<td>--fsubsample start delta end</td><td>frame subsampling (end = -1 for end)</td></tr>
+<tr>
+<td>-sc, --scale factor </td><td>input intensity scale factor</td></tr>
+<tr>
+<td>-osc, --out-scale factor</td><td>output intensity scale factor</td></tr>
+<tr>
+<td>-il, --in_like</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-roi</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-fp, --fill_parcellation</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-sp, --smooth_parcellation</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-zo, --zero_outlines</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-cf, --color_file</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nt, --no_translate</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>--status</td><td>status file for DICOM conversion</td></tr>
+<tr>
+<td>--sdcmlist</td><td>list of DICOM files for conversion</td></tr>
+<tr>
+<td>-ti, --template_info</td><td>dump info about template</td></tr>
+<tr>
+<td>-gis &lt;gdf image file stem&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-cg, --crop_gdf</td><td>apply GDF cropping</td></tr>
+<tr>
+<td>-zgez, --zero_ge_z_offset</td><td>set c_s=0 (appropriate for dicom \"files from GE machines with isocenter scanning)</td></tr>
+<tr>
+<td>-nozgez, --no_zero_ge_z_offset</td><td>don't set c_s=0, even if a GE volume</td></tr>
+<tr>
+<td>--sphinx</td><td>reorient to sphinx the position. This function is applicable when the input geometry information is correct but the  subject was in the scanner in the 'sphinx' position (ie, AP in line with the bore) instead of head-first-supine (HFS). This is often the case with monkeys. Note that the assumption is that the geometry information in the input file is otherwise accurate. </td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>outvolume</td><td>output volume</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>APPLYING TRANSFORMS (INCLUDING TALAIRACH)<br />The volume can be resampled into another space by supplying a transform using the --apply_transform flag. This reads the transform file and applies the transform (when --apply_inverse_transform is used, the transform is inverted and then applied). An example of a transform file is talairach.xfm as found in subjectid/mri/transforms. To convert a subject's orig volume to talairach space, execute the following lines: <br />* cd subjectid/mri mkdir talairach mri_convert --apply_transform transforms/talariach.xfm --devolvexfm subjectid --ic 0 0 0 orig talairach<br />This properly accounts for the case where the input volume does not have it's coordinate center at 0.To evaluate the result, run:<br />* tkmedit -f $SUBJECTS_DIR/talairach/mri/orig -aux talairach <br />The main and aux volumes should overlap very closely. If they do not, use tkregister2 to fix it (run tkregister --help for docs).</p>
+
+<h1>EXAMPLE 2</h1>
+<p>From the subject directory: mri_convert -at mri/transforms/talairach_one.m3z mri/norm.mgz mri/norm_transformed_by_gca_one.mgz</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mris_convert</p></html>
+</body>

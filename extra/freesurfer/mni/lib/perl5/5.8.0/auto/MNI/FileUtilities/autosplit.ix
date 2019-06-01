@@ -1,0 +1,24 @@
+# Index created by AutoSplit for blib/lib/MNI/FileUtilities.pm
+#    (file acts as timestamp)
+package MNI::FileUtilities;
+sub check_output_dirs 
+;
+sub check_output_path 
+;
+sub check_input_dirs 
+;
+sub check_files 
+;
+sub test_file 
+;
+sub search_directories 
+;
+sub find_program 
+;
+sub find_programs 
+;
+sub generate_numbered_filename 
+;
+sub statfs 
+;
+1;

@@ -1,0 +1,84 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_aparc2aseg</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_aparc2aseg [options]</p>
+
+<h1>DESCRIPTION</h1>
+<p>Maps the cortical labels from the automatic cortical parcellation (aparc) to the automatic segmentation volume (aseg). The result can be used as the aseg would. The algorithm is to find each aseg voxel labeled as cortex (3 and 42) and assign it the label of the closest cortical vertex. If the voxel is not in the ribbon (as defined by mri/lh.ribbon and rh.ribbon), then the voxel is marked as unknown (0). This can be turned off with --noribbon. The cortical parcellation is obtained from subject/label/hemi.aparc.annot which should be based on the curvature.buckner40.filled.desikan_killiany.gcs atlas. The aseg is obtained from subject/mri/aseg.mgz and should be based on the RB40_talairach_2005-07-20.gca atlas. If these atlases are used, then the segmentations can be viewed with tkmedit and the FreeSurferColorLUT.txt color table found in $FREESURFER_HOME. These are the default atlases used by recon-all.<br /><br />Note: The volumes of the cortical labels will be different than reported by mris_anatomical_stats because partial volume information is lost when mapping the surface to the volume. The values reported by mris_anatomical_stats will be more accurate than the volumes from the aparc+aseg volume.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<h3>None.</h3>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None.</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--s subject</td><td>Name of the subject as found in the SUBJECTS_DIR.</td></tr>
+<tr>
+<td>--o volfile</td><td>Full path of file to save the output segmentation in. Default is mri/aparc+aseg.mgz</td></tr>
+<tr>
+<td>--old-ribbon</td><td>use mri/hemi.ribbon.mgz as a mask for the cortex</td></tr>
+<tr>
+<td>--new-ribbon</td><td>Mask cortical voxels with mri/ribbon.mgz. Same as --volmask</td></tr>
+<tr>
+<td>--a2005s</td><td>Use ?h.aparc.a2005s.annot. Output will be aparc.a2005s+aseg.mgz. Creates index numbers that match a2005s entries in FreeSurferColorsLUT.txt</td></tr>
+<tr>
+<td>--a2009s</td><td>Use ?h.aparc.a2009s.annot. Output will be aparc.a2009s+aseg.mgz. Creates index numbers that match a2009s entries in FreeSurferColorsLUT.txt</td></tr>
+<tr>
+<td>--annot annotname</td><td>Use annotname surface annotation. By default, uses ?h.aparc.annot. With this option, it will load ?h.annotname.annot. The output file will be set to annotname+aseg.mgz, but this can be changed with --o. Note: running --annot aparc.a2009s is NOT the same as running --a2009s. The index numbers will be different.</td></tr>
+<tr>
+<td>--annot-table annottable</td><td>default is $FREESURFER_HOME/Simple_surface_labels2009.txt</td></tr>
+<tr>
+<td>--base-offset offset</td><td>Add offset to all segmentation ids. Put as last argument.</td></tr>
+<tr>
+<td>--labelwm</td><td>For each voxel labeled as white matter in the aseg, re-assign its label to be that of the closest cortical point if its distance is less than dmaxctx. The default value of dmaxctx is 5mm, but this can be changed with --wmparc-dmax. If it is beyond this distance, then it is labeld as 'Unsegmented White Matter'.</td></tr>
+<tr>
+<td>--wmparc-dmax dmax</td><td>max dist (mm) from cortex to be labeld as gyral WM (5mm)</td></tr>
+<tr>
+<td>--rip-unknown</td><td>do not label WM based on 'unknown' corical label</td></tr>
+<tr>
+<td>--hypo-as-wm</td><td>label hypointensities as WM</td></tr>
+<tr>
+<td>--no-fix-parahip</td><td>do not remove unconnected regions from WM parahip</td></tr>
+<tr>
+<td>--help</td><td>print out information on how to use this program</td></tr>
+<tr>
+<td>--version</td><td>print out version and exit</td></tr>
+<tr>
+<td>--smooth_normals niters</td><td>Change default (10) number of surface normal smoothing steps. This is used to prevent speckling of inaccurate voxels due (e.g.) the closest pial vertex being on the opposite bank of a sulcus.</td></tr>
+<tr>
+<td>--crs-test c r s</td><td>test mapping of col row slice</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>volume1</td><td>segmentation volume</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_aparc2aseg --s bert<br />  tkmedit bert orig.mgz -segmentation mri/aparc+aseg.mgz $FREESURFER_HOME/FreeSurferColorLUT.txt</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p> </p></html>
+</body>

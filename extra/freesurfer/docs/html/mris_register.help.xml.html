@@ -1,0 +1,166 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_register</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_register [options] &lt;surf_fname&gt; &lt;target&gt; &lt;out_fname&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program registers a surface to an average surface template.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;surf_fname&gt;</td><td>Input: Surface to register, often {hemi}.sphere</td></tr>
+<tr>
+<td>&lt;target&gt;</td><td>Input: The data to register to. In normal recon-all usage, this is a template file for average surface. Alternatively could also be a single-subject's surface -- see argument '-1' (one), which is useful during the template-development process.</td></tr>
+<tr>
+<td>&lt;out_fname&gt;</td><td>Output surface file to capture registration. Example: {hemi}.sphere.reg</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>*******************************************************************</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-1</td><td>(One) Treats target argument as the name of as a single subject's surface not a template file. (What pattern of filename is required?)</td></tr>
+<tr>
+<td>-addframe &lt;which_field, where_in_atlas (ints)&gt;</td><td>Add field which_field with location where_in_atlas in the atlas</td></tr>
+<tr>
+<td>-annot &lt;annot_name&gt;</td><td>Zeroes medial wall using annotation {annot_name}</td></tr>
+<tr>
+<td>-C &lt;curvature_fname&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-canon &lt;canon_name&gt;</td><td>Use surface {canon_name} for canonical properties</td></tr>
+<tr>
+<td>-inflated</td><td>Use inflated surface for initial alignment</td></tr>
+<tr>
+<td>-infname &lt;name&gt;</td><td>Uses {name} for inflated surface, for initial alignment. Sets inflated_name, surface_name and curvature_names[0]</td></tr>
+<tr>
+<td>-L &lt;labelfile atlas_gcsa_file label_name&gt;</td><td>Specify a manual label to align with atlas label &lt;label name&gt;</td></tr>
+<tr>
+<td>-O &lt;orig_name&gt;</td><td>Use {orig_name} for original properties</td></tr>
+<tr>
+<td>-overlay &lt;overlay_file navgs(int)&gt;</td><td>Adds a variable to the atlas from {overlay_file}, smoothing it {navgs} times. {subject}/labels/{hemi}.{overlay_file}</td></tr>
+<tr>
+<td>-overlay-dir &lt;overlay_dir&gt;</td><td>Changes overlay path: {subject}/{overlay_dir}/{hemi}.{overlay_file}</td></tr>
+<tr>
+<td>-sreg &lt;starting_reg_fname&gt;</td><td>Start registration with coordinates in file starting_reg_fname</td></tr>
+<tr>
+<td>-jacobian &lt;jacobian_fname&gt;</td><td>Write out jacobian of mapping to file jacobian_fname</td></tr>
+<tr>
+<td>-A &lt;n_averages (int)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-adaptive</td><td>Use adaptive time step integration</td></tr>
+<tr>
+<td>-area &lt;l_area (float)&gt;</td><td>Sets l_area</td></tr>
+<tr>
+<td>-corr &lt;l_corr (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-curv</td><td>Use smoothwm curvature for final alignment</td></tr>
+<tr>
+<td>-dist &lt;l_dist (float)&gt;</td><td>Specify distance term. Sets l_dist and also use_defaults = 0</td></tr>
+<tr>
+<td>-dt &lt;dt (float)&gt;</td><td>Sets momentum with dt</td></tr>
+<tr>
+<td>-dt_dec &lt;dt_decrease (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-dt_inc &lt;dt_increase (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-E &lt;l_external (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-error_ratio &lt;error_ratio (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-init</td><td>Use initial registration</td></tr>
+<tr>
+<td>-lap &lt;lap (float)&gt;</td><td>l_laplacian</td></tr>
+<tr>
+<td>-lm</td><td>Integrate using line minimization</td></tr>
+<tr>
+<td>-M &lt;momentum (float)&gt;</td><td>Chooses integration_type = INTEGRATE_MOMENTUM and sets momentum value</td></tr>
+<tr>
+<td>-max_degrees &lt;max_degrees (float)&gt;</td><td>Set max angle for search to max_degrees</td></tr>
+<tr>
+<td>-median</td><td>Uses median normalization (instead of mean).</td></tr>
+<tr>
+<td>-min_degrees &lt;min_degrees (float)&gt;</td><td>Set min angle for search to min_degrees</td></tr>
+<tr>
+<td>-multi_scale &lt;multi_scale (int)&gt;</td><td>Use multi_scale scales for morphing</td></tr>
+<tr>
+<td>-N &lt;niterations (int)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-nangles &lt;nangles (int)&gt;</td><td>Set # of angles/search per scale to nangles</td></tr>
+<tr>
+<td>-nbrs &lt;nbrs (int)&gt;</td><td>Use neighborhood size=nbrs</td></tr>
+<tr>
+<td>-nlarea &lt;l_nlarea (float)&gt;</td><td>Sets l_nlarea</td></tr>
+<tr>
+<td>-nocurv</td><td>Do not use smoothwm curvature for final alignment</td></tr>
+<tr>
+<td>-nonorm</td><td>Disables normalization</td></tr>
+<tr>
+<td>-norot</td><td>Disables initial rigid alignment</td></tr>
+<tr>
+<td>-nosulc</td><td>Disables initial sulc alignment</td></tr>
+<tr>
+<td>-nsurfaces &lt;nsurfaces&gt;</td><td>Use nsurfaces surfaces/curvatures for alignment</td></tr>
+<tr>
+<td>-ocorr &lt;l_ocorr (float)&gt;</td><td>Sets overlay correlation coefficient to l_ocorr</td></tr>
+<tr>
+<td>-P &lt;max_passes (int)&gt;</td><td>Limit unfolding to {max_passes} passes</td></tr>
+<tr>
+<td>-parea &lt;l_parea (float)&gt;</td><td>Sets l_parea</td></tr>
+<tr>
+<td>-remove_negative &lt;remove_negative (int)&gt;</td><td>Non-zero to remove negative triangles with iterative smoothing, or 0 to skip that</td></tr>
+<tr>
+<td>-reverse</td><td>Mirror image reverse brain before morphing</td></tr>
+<tr>
+<td>-rotate &lt;dalpha, dbeta, dgamma (floats)&gt;</td><td>Rotates brain by dalpha, dbeta, dgamma</td></tr>
+<tr>
+<td>-S &lt;scale (float)&gt;</td><td>Scales distances by {scale}</td></tr>
+<tr>
+<td>-search</td><td>Integrating with binary search line minimization</td></tr>
+<tr>
+<td>-spring &lt;l_spring (float)&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-tol &lt;tol (float)&gt;</td><td>Tolerance?</td></tr>
+<tr>
+<td>-topology</td><td>Preserves the topology of positive area triangles</td></tr>
+<tr>
+<td>-vnum, -distances &lt;nbhd_size, max_nbrs (floats)&gt;</td><td>Sets neighborhood parameters</td></tr>
+<tr>
+<td>-vsmooth</td><td>Use space/time varying smoothness weighting</td></tr>
+<tr>
+<td>-W &lt;write_iterations (int)&gt;</td><td>Also triggers diagnostics</td></tr>
+<tr>
+<td>-?, -H, -U, --help</td><td>print help</td></tr>
+<tr>
+<td>-V &lt;Gdiag_no (int)&gt;</td><td>Supplies a vertex number for diagnostics</td></tr>
+<tr>
+<td>-vector</td><td>Prints some help for Multiframe mode including listing field names/numbers</td></tr>
+<tr>
+<td>--version</td><td>print version</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

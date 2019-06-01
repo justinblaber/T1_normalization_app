@@ -1,0 +1,46 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_decimate</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_decimate [&lt;options&gt;] &lt;input surface&gt; &lt;output surface&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program reduces the number of triangles in a surface and outputs the new surface to a file using the GNU Triangulated Surface (GTS) Library.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>input surface file</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>output surface file </td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-d &lt;decimation level&gt;</td><td>target decimation level of new surface (value between 0&lt;--&gt;1.0, default: 0.5). The resulting surface will have approximately triangles = &lt;decimationLevel&gt; * origTriangles</td></tr>
+<tr>
+<td>-m &lt;minimum angle&gt;</td><td>The minimum angle in degrees allowed between faces during decimation (default: 1.0).</td></tr>
+<tr>
+<td>--help</td><td>print out information on how to use this program</td></tr>
+<tr>
+<td>--version</td><td>print out version and exit</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

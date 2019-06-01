@@ -1,0 +1,95 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_segment</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_segment &lt;classifierfile&gt; &lt;invol&gt; &lt;outvol&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program segments white matter from the input volume.  The input volume should be normalized such that white matter voxels are ~110-valued, and the volume is conformed to 256^3.  This can be accomplished by:  mri_normalize invol outvol -conform</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;classifierfile&gt;</td><td>classifier file</td></tr>
+<tr>
+<td>&lt;invol&gt;</td><td>input volume</td></tr>
+<tr>
+<td>&lt;outvol&gt;</td><td>output volume</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-no1d_remove &lt;s&gt;;</td><td>don't run code that removes 1D strands from segmentation</td></tr>
+<tr>
+<td>-slope &lt;s&gt;</td><td>set the curvature slope (both n and p)</td></tr>
+<tr>
+<td>-pslope &lt;p&gt;</td><td>set the curvature pslope (default=1.0)</td></tr>
+<tr>
+<td>-nslope &lt;n&gt;</td><td>set the curvature nslope (default=1.0)</td></tr>
+<tr>
+<td>-debug_voxel &lt;x y z&gt;</td><td>set voxel for debugging</td></tr>
+<tr>
+<td>-auto</td><td>automatically detect class statistics (default)</td></tr>
+<tr>
+<td>-noauto</td><td>don't automatically detect class statistics</td></tr>
+<tr>
+<td>-log</td><td>log to ./segment.dat</td></tr>
+<tr>
+<td>-keep</td><td>keep wm edits. maintains all values of 1 and 255. voxels of value 1 will be 'deleted' and voxels of value 255 will be 'filled'</td></tr>
+<tr>
+<td>-ghi,-gray_hi &lt;h&gt;</td><td>set the gray matter high limit (default=100.000)</td></tr>
+<tr>
+<td>-wlo,-wm_low &lt;l&gt;</td><td>set the white matter low limit (default=90.000)</td></tr>
+<tr>
+<td>-whi,-wm_hi &lt;h&gt;</td><td>set the white matter high limit (default=125.000)</td></tr>
+<tr>
+<td>-nseg &lt;n&gt;</td><td>thicken the n largest thin strands (default=20)</td></tr>
+<tr>
+<td>-thicken</td><td>toggle thickening step (default=ON)</td></tr>
+<tr>
+<td>-fillbg</td><td>toggle filling of the basal ganglia (default=OFF)</td></tr>
+<tr>
+<td>-fillv</td><td>toggle filling of the ventricles (default=OFF)</td></tr>
+<tr>
+<td>-b &lt;s&gt;</td><td>set blur sigma (default=0.25)</td></tr>
+<tr>
+<td>-n &lt;i&gt;</td><td>set # iterations of border classification (default=1)</td></tr>
+<tr>
+<td>-t &lt;t&gt;</td><td>set limit to thin strands in mm (default=4)</td></tr>
+<tr>
+<td>-v</td><td>verbose</td></tr>
+<tr>
+<td>-p &lt;p&gt;</td><td>set % threshold (default=0.80)</td></tr>
+<tr>
+<td>-x &lt;filename&gt;</td><td>extract options from filename</td></tr>
+<tr>
+<td>-w &lt;w&gt;</td><td>set wsize (default=11)</td></tr>
+<tr>
+<td>-u</td><td>usage</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;outvol&gt;</td><td>output volume</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

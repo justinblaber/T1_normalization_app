@@ -1,0 +1,108 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_ca_normalize</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_ca_normalize [&lt;options&gt;] &lt;inbrain1&gt; &lt;inbrain2&gt; ... &lt;atlas&gt; &lt;xform&gt; &lt;output1&gt; &lt;output2&gt; ...</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program creates a normalized volume using the brain volume and an input gca file.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>inbrain1</td><td>input volume</td></tr>
+<tr>
+<td>inbrain2</td><td>input volume</td></tr>
+<tr>
+<td>atlas</td><td>atlas file in gca format</td></tr>
+<tr>
+<td>xform</td><td>tranform file in lta format</td></tr>
+<tr>
+<td>output1</td><td>output volume</td></tr>
+<tr>
+<td>output2</td><td>output volume</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-seg &lt;filename&gt;</td><td>aseg file, to help normalization</td></tr>
+<tr>
+<td>-sigma &lt;bias sigma&gt;</td><td>smoothing sigma for bias field if control points specified (def=4)</td></tr>
+<tr>
+<td>-fsamples &lt;filename&gt;</td><td>write control points to filename</td></tr>
+<tr>
+<td>-dilate &lt;niters&gt;</td><td>dilate the brain mask niters times before masking</td></tr>
+<tr>
+<td>-nsamples &lt;filename&gt;</td><td>write transformed normalization control points to filename</td></tr>
+<tr>
+<td>-mask &lt;mri_vol&gt;</td><td>use mri_vol to mask input</td></tr>
+<tr>
+<td>-f &lt;filename&gt;</td><td>define control points from filename</td></tr>
+<tr>
+<td>-fonly &lt;filename&gt;</td><td>only use control points from filename</td></tr>
+<tr>
+<td>-diag &lt;filename&gt;</td><td>write to log file</td></tr>
+<tr>
+<td>-debug_voxel &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>debug voxel</td></tr>
+<tr>
+<td>-debug_node &lt;x&gt; &lt;y&gt; &lt;z&gt;</td><td>debug node</td></tr>
+<tr>
+<td>-tr &lt;float n&gt;</td><td>set TR in msec</td></tr>
+<tr>
+<td>-te &lt;float n&gt;</td><td>set TE in msec</td></tr>
+<tr>
+<td>-alpha &lt;float n&gt;</td><td>set alpha in radians</td></tr>
+<tr>
+<td>-example &lt;mri_vol&gt; &lt;segmentation&gt;</td><td>use T1 (mri_vol) and segmentation as example</td></tr>
+<tr>
+<td>-novar</td><td>do not use variance estimates</td></tr>
+<tr>
+<td>-renorm &lt;mri_vol&gt;</td><td>renormalize using predicted intensity values in mri_vol</td></tr>
+<tr>
+<td>-flash</td><td>use FLASH forward model to predict intensity values</td></tr>
+<tr>
+<td>-prior &lt;float t&gt;</td><td>use prior threshold t (default=.6)</td></tr>
+<tr>
+<td>-w</td><td>write normalized volume each nregion iteration to norm(n).mgh(see -n)</td></tr>
+<tr>
+<td>-n &lt;int n&gt;</td><td>use n regions/struct for normalization</td></tr>
+<tr>
+<td>-v &lt;int n&gt;</td><td>used for debugging and diagnostics</td></tr>
+<tr>
+<td>-p &lt;float p&gt;</td><td>use top p percent(default=.25) white matter points as control points</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>outvol</td><td>output volume in either mgh or mgz format</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_ca_normalize -mask -p 0.25 subject1/mri/brain subject1/mri/nu single_one.gca subject1/mri/transforms/talairach_one.lta subject1/mri/norm_one.mgh</p>
+
+<h1>BUGS</h1>
+<p>None</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>***********************************************************************</p></html>
+</body>

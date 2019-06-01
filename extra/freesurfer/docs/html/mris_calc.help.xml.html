@@ -1,0 +1,201 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_calc</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_calc [OPTIONS] &lt;file1&gt; &lt;ACTION&gt; [&lt;file2&gt; | &lt;floatNumber&gt;]</p>
+
+<h1>DESCRIPTION</h1>
+<p>'mris_calc' is a simple calculator that operates on FreeSurfer curvatures and volumes. In most cases, the calculator functions with three arguments: two inputs and an &lt;ACTION&gt; linking them. Some actions, however, operate with only one input &lt;file1&gt;. In all cases, the first input &lt;file1&gt; is the name of a FreeSurfer curvature overlay (e.g. rh.curv) or volume file (e.g. orig.mgz). For two inputs, the calculator first assumes that the second input is a file. If, however, this second input file doesn't exist, the calculator assumes it refers to a float number, which is then processed according to &lt;ACTION&gt;.Note: &lt;file1&gt; and &lt;file2&gt; should typically be generated on the same subject.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>ACTION</td><td>The action to be perfomed on the two input files. This is a text string that defines the mathematical operation to execute. For two inputs, this action is applied in an indexed element-by-element fashion, i.e. &lt;file3&gt;[n] = &lt;file1*gt;[n] &lt;ACTION&gt; &lt;file2&gt;[n] where 'n' is an index counter into the data space.</td></tr>
+</table>
+<h3>MATHEMATICAL</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>add</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; + &lt;file2&gt;</td></tr>
+<tr>
+<td>sub</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; - &lt;file2&gt;</td></tr>
+<tr>
+<td>sub0</td><td>Same as sub but sets output to 0 if either input is 0</td></tr>
+<tr>
+<td>mul</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; * &lt;file2&gt;.</td></tr>
+<tr>
+<td>div</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; / &lt;file2&gt;</td></tr>
+<tr>
+<td>pow</td><td>2 inputs and 1 output. &lt;outputFile&gt; = pow(&lt;file1&gt;,&lt;file2&gt;)</td></tr>
+<tr>
+<td>sratio</td><td>2 inputs and 1 output. &lt;outputFile&gt; =  file1/file2 if file1&gt;file2 or -file2/file1 if file2&gt;file1</td></tr>
+<tr>
+<td>pctdiff</td><td>2 inputs and 1 output. &lt;outputFile&gt; = (&lt;file1&gt;-&lt;file2&gt;)/((&lt;file1&gt;+&lt;file2&gt;+FLT_MIN)/2)</td></tr>
+<tr>
+<td>pctdiff0</td><td>Same as pctdiff0 but sets output to 0 if either input is 0</td></tr>
+<tr>
+<td>norm</td><td>1 inputs and 1 output. &lt;outputFile&gt; = norm(&lt;file1&gt;). This creates an output file such that all values are constrained (normalized) between 0.0 and 1.0.</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td><br />For volume files, be very careful about data types! If the input volume is has data of type UCHAR (i.e. integers between zero and 255), the output will be constrained to this range and type as well! That means, simply, that if type UCHAR vols are multiplied together, the resultant output will itself be a UCHAR volume. This is probably not what you want. In order for calculations to evaluate correctly, especially 'mul', 'div', and 'norm', convert the input volumes to float format, i.e.:<br />$&gt;mri_convert -odt float input.mgz input.f.mgz<br />$&gt;mris_calc -o input_norm.mgz input.f.mgz norm<br />will give correct results, while<br />$&gt;mris_calc -o input_norm.mgz input.mgz norm<br />most likely be *not* what you are looking for.</td></tr>
+<tr>
+<td>mod</td><td>2 inputs and 1 output. &lt;outputFile&gt; = mod(&lt;file1&gt;, &lt;file2&gt;). The 'mod' operation is performed by a call to the C-function, fmod(), and accepts either integer or floats -- in fact, ints are converted to floats for this operation. Output sign convention and 0 handling follows that of fmod(): <br />fmod ( Â±0, y )   returns Â±0 for y not zero.<br />fmod ( x, y )    returns a NaN and raises the invalid floating-point exception for x infinite or y zero.<br />fmod ( x, Â±inf ) returns x for x not infinite.</td></tr>
+<tr>
+<td>sqd</td><td>2 inputs and 1 output. &lt;outputFile&gt; = (&lt;file1&gt; - &lt;file2&gt;)^2. This stores the square difference between two inputs.</td></tr>
+<tr>
+<td>set</td><td>2 inputs and 1 output. &lt;file1&gt; = &lt;file2&gt;This command overwrites its input data. It still requires a valid &lt;file1&gt; -- since in most instances the 'set' command is used to set input data values to a single float constant, i.e.<br />$&gt;mris_calc rh.area set 0.005<br />will set all values of rh.area to 0.005. It might be more meaningful to first make a copy of the input file, and set this.<br />$&gt;cp rh.area rh-0.005<br />$&gt;mris_calc rh-0.005 set 0.005<br />Similarly for volumes<br />$&gt;cp orig.mgz black.mgz<br />$&gt;mris_calc black.mgz set 0<br />will result in the 'black.mgz' volume having all its intensity values set to 0.<br /></td></tr>
+<tr>
+<td>atan2</td><td>2 inputs and 1 output. &lt;outputFile&gt; = atan2(&lt;file1&gt;,&lt;file2&gt;)</td></tr>
+<tr>
+<td>bcor</td><td>2 inputs and 1 output. &lt;outputFile&gt; = -log10(1-(1-p)^N)*sign(sig)  where p = 10^-abs(&lt;file1&gt;) and N = &lt;file2&gt; or constant. Can be used to bonferroni corrected sig file.<br /></td></tr>
+<tr>
+<td>mag</td><td>2 inputs and 1 output. &lt;outputFile&gt; = atan2(&lt;file1&gt;,&lt;file2&gt;)</td></tr>
+<tr>
+<td>sig2p</td><td>1 input and 1 output. &lt;outputFile&gt; = 10^(-abs(&lt;file1&gt;)</td></tr>
+<tr>
+<td>sqr</td><td>1 input and 1 output. &lt;outputFile&gt; = &lt;file1&gt; * &lt;file1&gt;</td></tr>
+<tr>
+<td>sqrt</td><td>1 input and 1 output. &lt;outputFile&gt; = sqrt(&lt;file1&gt;)</td></tr>
+<tr>
+<td>abs</td><td>1 input and 1 output. &lt;outputFile&gt; = abs(&lt;file1&gt;)</td></tr>
+<tr>
+<td>log10</td><td>1 input and 1 output. &lt;outputFile&gt; = log10(&lt;file1&gt;). If input=0, then output=0. Output is NaN if input less than zero </td></tr>
+<tr>
+<td>inv</td><td>1 input and 1 output. &lt;outputFile&gt; = 1/(&lt;file1&gt;)</td></tr>
+<tr>
+<td>sign</td><td>1 input and 1 output. &lt;outputFile&gt; = sign(&lt;file1&gt;). The 'sign' function returns at each index of an input file:<br />-1 if &lt;file1&gt;[n] &lt;  0<br />0 if &lt;file1&gt;[n] == 0<br />1 if &lt;file1[n] &gt;  0</td></tr>
+</table>
+<h3>RELATIONAL</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>eq</td><td>Equal to. 2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; == &lt;file2&gt;.</td></tr>
+<tr>
+<td>lt</td><td>Less than. 2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; &lt;  &lt;file2&gt;.</td></tr>
+<tr>
+<td>lte</td><td>Less than or equal to. 2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; &lt;= &lt;file2&gt;.</td></tr>
+<tr>
+<td>gt</td><td>Greater than. 2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; &gt;  &lt;file2&gt;.</td></tr>
+<tr>
+<td>gte</td><td>Greater than or equal to. 2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; &gt;= &lt;file2&gt;.</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td><br />If the comparison is valid for a point in &lt;file1&gt; compared to corresponding point in &lt;file2&gt;, the &lt;file1&gt; value is retained; otherwise the &lt;file1&gt; value is set to zero. Thus, if we run 'mris_calc input1.mgz lte input2.mgz', the output volume 'out.mgz' will have all input1.mgz values that are not less than or equal to input2.mgz set to zero.</td></tr>
+<tr>
+<td>upl</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; upperlimit &lt;file2&gt;. For this command, any values in &lt;file1&gt; that are greater than or equal to corresponding data points in &lt;file2&gt; are limited to the values in &lt;file2&gt;. Essentially, 'upl' guarantees that all values in &lt;file1&gt; are less than or at most equal to corresponding values in &lt;file2&gt;.</td></tr>
+<tr>
+<td>lrl</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; lowerlimit &lt;file2&gt;. For 'lpl', any &lt;file1&gt; values that are less than corresponding &lt;file2&gt; values are set to these &lt;file2&gt; values. It guarantees that all values in &lt;file1&gt; are greater than or at least equal to corresponding values in &lt;file2&gt;.</td></tr>
+</table>
+<h3>LOGICAL</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>and</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; &amp;&amp; &lt;file2&gt;</td></tr>
+<tr>
+<td>or</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; || &lt;file2&gt;</td></tr>
+<tr>
+<td>andbw</td><td>2 inputs and 1 output. &lt;outputFile&gt; = (int)&lt;file1&gt; &amp; (int)&lt;file2&gt;</td></tr>
+<tr>
+<td>orbw</td><td>2 inputs and 1 output. &lt;outputFile&gt; = (int)&lt;file1&gt; | (int)&lt;file2&gt;</td></tr>
+<tr>
+<td>not</td><td>1 input and 1 output. &lt;outputFile&gt; = not &lt;file1&gt;</td></tr>
+<tr>
+<td>masked</td><td>2 inputs and 1 output. &lt;outputFile&gt; = &lt;file1&gt; maskedby &lt;file2&gt;</td></tr>
+<tr>
+<td>&nbsp;</td>
+<td>The logical operations follow C convention, i.e. and is a logical 'and' equivalent to the C '&amp;&amp;' operator, similarly for 'or' which is evaluated with the C '||'. The 'andbw' and 'orbw' are bit-wise operators, evaluted with the C operators '&amp;' and '|' respectively.</td></tr>
+</table>
+<h3>DATA CONVERSION</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>ascii</td><td>1 inputs and 1 output. &lt;outputFile&gt; = ascii &lt;file1&gt;. The 'ascii' command converts &lt;file1&gt; to a text format file, suitable for reading into MatLAB, for example. Note that for volumes data values are written out as a 1D linear array with looping order (slice, height, width).</td></tr>
+</table>
+<h3>STATISTICAL</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>Note also that the standard deviation can suffer from float rounding errors and is only accurate to 4 digits of precision. If an output file is supplied, it will write the value to that file in ASCII format.</td></tr>
+<tr>
+<td>size</td><td>1 inputs and 0 output. print the size (number of elements) of &lt;file1&gt;</td></tr>
+<tr>
+<td>min</td><td>1 inputs and 0 output. print the min value (and index) of &lt;file1&gt;</td></tr>
+<tr>
+<td>max</td><td>1 inputs and 0 output. print the max value (and index) of &lt;file1&gt;</td></tr>
+<tr>
+<td>mean</td><td>1 inputs and 0 output. print the mean value of &lt;file1&gt;</td></tr>
+<tr>
+<td>std</td><td>1 inputs and 0 output. print the standard deviation of &lt;file1&gt;</td></tr>
+<tr>
+<td>sum</td><td>1 inputs and 0 output. print the sum across all values of &lt;file1&gt;</td></tr>
+<tr>
+<td>prod</td><td>1 inputs and 0 output. print the inner product across &lt;file1&gt;</td></tr>
+<tr>
+<td>stats</td><td>1 inputs and 0 output. process 'size', 'min', 'max', 'mean', 'std'</td></tr>
+</table>
+<h3>ARBITRARY FLOATS AS SECOND INPUT ARGUMENT</h3>
+
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>If a second input argument is specified, 'mris_calc' will attempt to open the argument following &lt;ACTION&gt; as if it were a curvature file. Should this file not exist, 'mris_calc' will attempt to parse the argument as if it were a float value. In such a case, 'mris_calc' will create a dummy internal array structure and set all its elements to this float value.</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>*******************************************************************</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>--output &lt;outputCurvFile&gt;,-o &lt;outputCurvFile&gt;</td><td>By default, 'mris_calc' will save the output of the calculation to a file in the current working directory with filestem 'out'. The file extension is automatically set to the appropriate filetype based on the input. For any volume type, the output defaults to '.mgz' and for curvature inputs, the output defaults to '.crv'.</td></tr>
+<tr>
+<td>--label &lt;FreeSurferLabelFile&gt;,-l &lt;FreeSurferLabelFile&gt;</td><td>If specified, constraint the calculation to the vertices defined in the &lt;FreeSurferLabelFile&gt;. This is most useful for calculations relating to curvature and thickness files that are defined on a surface. Note that 'mris_calc' will apply a specified label filter to any inputs, i.e. surface related measures (thickness, curvatures) *and* volumes, if volumes are input. This means that if a surface label is applied to a volume, the corresponding volume indices will be tagged and used for calculations. Applying such a surface filter operation to volume indices might be somewhat meaningless. Also, if a label is specified, calculations outside of the label area are set to zero. That means if an addition operation is specified, only the input indices corresponding to the label will be operated on. The non-label indices in the output will be zero.</td></tr>
+<tr>
+<td>--version,-v</td><td>Print out version number.</td></tr>
+<tr>
+<td>--verbosity &lt;value&gt;</td><td>Set the verbosity of the program. Any positive value will trigger verbose output, displaying intermediate results. The &lt;value&gt; can be set arbitrarily. Useful mostly for debugging.</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>$&gt;mris_calc rh.area mul rh.thickness<br />Multiply each value in &lt;rh.area&gt; with the corresponding value in &lt;rh.thickness&gt;, creating a new file called 'out.crv' that contains the result.</p>
+
+<h1>EXAMPLE 2</h1>
+<p>$&gt;mris_calc --output rh.weightedCortex rh.area mul rh.thickness<br />Same as above, but give the ouput file the more meaningful name of 'rh.weightedCortex'.</p>
+
+<h1>EXAMPLE 3</h1>
+<p>$&gt;mris_calc rh.area max<br />Determine the maximum value in 'rh.area' and print to stdout. In addition to the max value, the index offset in 'rh.area' containing this value is also printed.</p>
+
+<h1>EXAMPLE 4</h1>
+<p>$&gt;mris_calc rh.area stats<br />Determine the size, min, max, mean, and std of 'rh.area'.</p>
+
+<h1>EXAMPLE 5</h1>
+<p>$&gt;mris_calc orig.mgz sub brainmask.mgz<br />Subtract the brainmask.mgz volume from the orig.mgz volume. Result is saved by default to out.mgz.</p>
+
+<h1>EXAMPLE 6</h1>
+<p>$&gt;mris_calc -o ADC_masked.nii ADC.nii masked B0_mask.img<br />Mask a volume 'ADC.nii' with 'B0_mask.img', saving the output in 'ADC_masked.nii'. Note that the input volumes are different formats, but the same logical size.</p>
+
+<h1>EXAMPLE 7</h1>
+<p>Consider the case when calculating the right hemisphere pseudo volume formed by the FreeSurfer generated white matter 'rh.area' curvature file, and the cortical thickness, 'rh.thickness'. Imagine this is to be expressed as a percentage of intercranial volume. First, calculate the volume and store in a curvature format:<br />$&gt;mris_calc -o rh.cortexVol rh.area mul rh.thickness<br />Now, find the intercranial volume (ICV) in the corresponding output file generated by FreeSurfer for this subject. Assume ICV = 100000.<br />$&gt;mris_calc -o rh.cortexVolICV rh.cortexVol div 100000<br />Here the second &lt;ACTION&gt; argument is a number and not a curvature file.We could have achieved the same effect by first creating an intermediate curvature file, 'rh.ICV' with each element set to the ICV, and then divided by this curvature:<br />$&gt;cp rh.area rh.ICV<br />$&gt;mris_calc rh.ICV set 100000<br />$&gt;mris_calc -o rh.cortexVolICV rh.cortexVol div rh.ICV</p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

@@ -1,0 +1,85 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mris_make_surfaces</p>
+
+<h1>SYNOPSIS</h1>
+<p>mris_make_surfaces [options] &lt;subject name&gt; &lt;hemisphere&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program positions the tessellation of the cortical surface at the white matter surface, then the gray matter surface and generate surface files for these surfaces as well as a 'curvature' file for the cortical thickness, and a surface file which approximates layer IV of the cortical sheet.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;Subject Name&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>&lt;Hemisphere&gt;</td><td>r(right) or l(left) brain hemisphere</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-q</td><td>Omit self-intersection and only generate gray/white surface</td></tr>
+<tr>
+<td>-max_gray_scale  mgs</td><td>in white deformation set outside_hi = (max_border_white + mgs*max_gray) / (mgs+1.0)</td></tr>
+<tr>
+<td>-c</td><td>Create curvature and area files from white matter surface</td></tr>
+<tr>
+<td>-a &lt;avgs&gt;</td><td>Average curvature values &lt;avgs&gt; times (default=10)</td></tr>
+<tr>
+<td>-first_wm_peak</td><td>Settle WM surface at first peak in intensity<br />      profile instead of highest</td></tr>
+<tr>
+<td>-whiteonly</td><td>Only generate white matter surface</td></tr>
+<tr>
+<td>-orig_white &lt;surf&gt;</td><td>specify a white surface to start with</td></tr>
+<tr>
+<td>-orig_pial &lt;surf&gt;</td><td>specify a pial surface to start with</td></tr>
+<tr>
+<td>-w &lt;value&gt;</td><td>unknown</td></tr>
+<tr>
+<td>-pa &lt;avgs&gt;</td><td>average pial curvature values a max of &lt;avgs&gt; times (default=16)</td></tr>
+<tr>
+<td>-wa &lt;avgs&gt;</td><td>average white curvature values a max of &lt;avgs&gt; times (default=4)</td></tr>
+<tr>
+<td>-T1 T1vol</td><td>default is brain</td></tr>
+<tr>
+<td>-wvol whitevol &lt;hires&gt;</td><td>&nbsp;</td>
+</tr>
+<tr>
+<td>-long</td><td>longitudinal</td></tr>
+<tr>
+<td>-dura_thresh &lt;threshold&gt;</td><td>set a threshold for the multi-echo mprage dura avoidance instead of automatically estimating it</td></tr>
+<tr>
+<td>-SDIR</td><td>SUBJECTS_DIR</td></tr>
+<tr>
+<td>-pial</td><td>pialsurfname</td></tr>
+<tr>
+<td>-white</td><td>whitesurfname</td></tr>
+<tr>
+<td>-erase_cerebellum</td><td>if aseg is loaded erases cerebellar labled voxels in the input image</td></tr>
+<tr>
+<td>-nsigma_above n</td><td># of sigmas above the mean to allow gray matter T2 intensities</td></tr>
+<tr>
+<td>-nsigma_below n</td><td># of sigmas below the mean to allow gray matter T2 intensities</td></tr>
+<tr>
+<td>-T2_min threshold</td><td>specify threshold for min T2 value allowed to be interior to the cortical ribbon</td></tr>
+<tr>
+<td>-T2_max threshold</td><td>specify threshold for max T2 value allowed to be interior to the cortical ribbon</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

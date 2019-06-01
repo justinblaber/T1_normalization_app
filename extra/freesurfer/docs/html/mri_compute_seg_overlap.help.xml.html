@@ -1,0 +1,52 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_compute_seg_overlap - compute coefficents of overlap</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_compute_seg_overlap [&lt;options&gt;] segvol1 segvol2</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program compares two segmentation volumes and computes the Dice and Jaccard Coefficients. It considers 12 major structures (label numbers):<br />    L/R Hippocampus (17,53)<br />    L/R Caudate (11,50)<br />    L/R Putamen (12,51)<br />    L/R Pallidum (13,52)<br />    L/R Amygdala (18,54)<br />    L/R Thalamus_Proper (10,49)<br />    L/R Lateral_Ventricle (75,76)<br />    Third and Fourth Ventricles (14,15)<br />    L/R Inf_Lat_Vent (5,44)<br />    L/R Cerebral_White_Matter (2,41)<br />    L/R Cerebral-Cortex (3,42)<br />    L/R Accumbens-area (26,58)<br /><br />    NOTE! white matter, cortex and accumbens are excluded from the<br />    'overall Dice' measure (which is a mean), as the surface-based <br />    wm/gm measures are more accurate (and accumbens is very <br />    difficult to measure).<br /><br /></p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>segvol1</td><td>first segmentation volume</td></tr>
+<tr>
+<td>segvol2</td><td>second segmentation volume</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-log filename</td><td>log file for individual Dice<br />(12 structure pairs, plus mean, std, and 'overall')</td></tr>
+<tr>
+<td>-mlog filename</td><td>log file for mean Dice </td></tr>
+<tr>
+<td>-slog filename</td><td>log file for std Dice</td></tr>
+<tr>
+<td>-olog</td><td>log file for 'overall' Dice<br />(mean excluding wm, gm and accumbens)</td></tr>
+<tr>
+<td>-cortex (0/1)</td><td>if (0/1) is nonzero, exclude cerebral cortex<br />	  labels from all calculation</td></tr>
+<tr>
+<td>-wm (0/1)</td><td>if (0/1) is nonzero, exclude cerebral white matter<br />	  labels from all calculation</td></tr>
+</table>
+
+
+<h1>EXAMPLE 1</h1>
+<p>mri_compute_seg_overlap manual_seg.mgz aseg.mgz<br /><br />Used to compare the quality of the automatic segmentation with a manual segmentation.  A Dice of 0.85 is about average. </p>
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

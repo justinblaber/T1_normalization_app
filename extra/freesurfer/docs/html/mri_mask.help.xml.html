@@ -1,0 +1,61 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mri_mask - applies a mask volume ( typically skull stripped )</p>
+
+<h1>SYNOPSIS</h1>
+<p>mri_mask [options] &lt;in vol&gt; &lt;mask vol&gt; &lt;out vol&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program applies a mask volume ( typically skull stripped ).</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>in vol</td><td>input volume</td></tr>
+<tr>
+<td>mask vol</td><td>mask volume</td></tr>
+</table>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-xform %s</td><td>apply LTA transform to align mask to input volume</td></tr>
+<tr>
+<td>-invert</td><td>reversely apply -xform</td></tr>
+<tr>
+<td>-lta_src %s</td><td>source volume for -xform (if not available from the xform file)</td></tr>
+<tr>
+<td>-lta_dst %s</td><td>target volume for -xform (if not available from the xform file)</td></tr>
+<tr>
+<td>-T threshold</td><td>threshold mask volume at threshold (i.e., all values &lt;= T considered as zero)</td></tr>
+<tr>
+<td>-bb npad</td><td>Create and extract data from a bounding box around the mask. The bounding box is expanded by npad voxels in each direction. npad should be at least 1 to avoid clipping</td></tr>
+<tr>
+<td>-abs</td><td>take abs() before applying threshold</td></tr>
+<tr>
+<td>-oval #</td><td>use oval as output instead of 0</td></tr>
+<tr>
+<td>-transfer #</td><td>transfer only voxel value # from mask to out</td></tr>
+<tr>
+<td>-keep_mask_deletion_edits</td><td>transfer voxel-deletion edits (voxels=1) from mask to out vol</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>out vol</td><td>output volume</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;analysis-bugs@nmr.mgh.harvard.edu&gt;</p></html>
+</body>

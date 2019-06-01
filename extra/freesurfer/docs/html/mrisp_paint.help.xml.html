@@ -1,0 +1,74 @@
+<html>
+<body>
+<basefont face="sans-serif"></basefont>
+
+
+<h1>NAME</h1>
+<p>mrisp_paint</p>
+
+<h1>SYNOPSIS</h1>
+<p>mrisp_paint [options] &lt;template file&gt; &lt;input surface&gt; &lt;output name&gt;</p>
+
+<h1>DESCRIPTION</h1>
+<p>This program is useful for extracting one of the arrays (\"a variable\") from a surface-registration template file. The output is a file containing a surface-worth of per-vertex values, saved in \"curvature\" format. Because the template data is sampled to a particular surface mesh, this conjures the idea of \"painting to a surface\".<br /><br />Extra Notes:<br />1. I (GW) am fairly certain that it only makes sense to use a sphere as the input surface to which to resample the template data. At that, it probably only produces a useful result to resample the data to the ?h.sphere.reg file of a subject that's been registered to this template. (Of course, once that's done, the output curv-format file can be displayed on any of the same subject's surfaces.)<br /><br />2. The ?h.sphere (and ?h.sphere.reg) of subject fsaverage is an evenly-gridded icosahedron which would make a particularly regular surface to use with mris_paint, if the objective is simply to visualize a template variable. (I think). The files {fshome}/average/surf/?h.sphere.reg look to be the same thing, and all of these may be the same thing as ic7.tri.</p>
+
+<h1>POSITIONAL ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;template_fname&gt;</td><td>Full path to template_file. Template file is usually a tif file (not a picture image; tif format is just used to contain FreeSurfer array data). Template may contain more than one parameter, typically 3 as in the standard template. To select a particular parameter, append '#' followed by frame number. Eg: 'somepath/mytemplate.tif#1'. Numbering starts at 0, which is the default.</td></tr>
+<tr>
+<td>&lt;surf_fname&gt;</td><td>Full path to surface file which will provide the grid (vertices) onto which the template data is to be sampled or 'painted'. (See note below on what kind of surface is suitable.)</td></tr>
+<tr>
+<td>&lt;out_fname&gt;</td><td>Output file name. Can be full path, or if directory omitted then will save to same directory as surf_fname</td></tr>
+</table>
+
+
+<h1>REQUIRED-FLAGGED ARGUMENTS</h1>
+<h3>None.</h3>
+
+
+<h1>OPTIONAL-FLAGGED ARGUMENTS</h1>
+<table border="3">
+<tr><th>Argument</th><th>Explanation</th></tr>
+<tr>
+<td>-SDIR &lt;subjects_dir&gt;</td><td>Set SUBJECTS_DIR. Default: use environment variable/</td></tr>
+<tr>
+<td>-A &lt;navgs&gt;</td><td>Average curvature patterns navgs times</td></tr>
+<tr>
+<td>-N</td><td>Normalize curvature by variance.</td></tr>
+<tr>
+<td>-f &lt;frame_number&gt;</td><td>Paint frame number frame_number to output file. Default: 0</td></tr>
+<tr>
+<td>-S</td><td>Take square-root of output variable</td></tr>
+<tr>
+<td>-variance &lt;subject_name hemi field_no&gt;</td><td>Generate variance map. This selects from the template the second frame of the selected parameter, and invokes some other computations.</td></tr>
+<tr>
+<td>-?,-U</td><td>Print usage</td></tr>
+<tr>
+<td>--all-info, -all-info</td><td>Prints BIRN-standard program information</td></tr>
+<tr>
+<td>--help</td><td>Prints help message</td></tr>
+<tr>
+<td>-V &lt;vertex_num (int)&gt;</td><td>Invoke diagnostics for vertex number vertex_num</td></tr>
+<tr>
+<td>--version, -version</td><td>Prints version information</td></tr>
+<tr>
+<td>-W</td><td>Write some diagnostics (DIAG_WRITE)</td></tr>
+</table>
+
+
+<h1>OUTPUTS</h1>
+<table border="3">
+<tr><th>Output</th><th>Explanation</th></tr>
+<tr>
+<td>&lt;output name&gt;</td><td>the output specified as an argument. This is a file containing a surface-worth of per-vertex values, saved in \"curvature\" format. The per-vertex values are the selected variable from the template file, sampled to the given surface.</td></tr>
+</table>
+
+
+<h1>REPORTING</h1>
+<p>Report bugs to &lt;freesurfer@nmr.mgh.harvard.edu&gt;</p>
+
+<h1>SEE-ALSO</h1>
+<p>mris_make_template</p></html>
+</body>
