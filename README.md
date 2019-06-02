@@ -4,7 +4,7 @@ This includes everything required to build a docker and corresponding singularit
 
 [Docker Hub](https://hub.docker.com/r/justinblaber/t1_normalization/tags/)
 
-[Singularity Hub](https://www.singularity-hub.org/collections/3088)
+[Singularity Hub](https://www.singularity-hub.org/collections/3090)
 
 # Run Instructions:
 For docker:
